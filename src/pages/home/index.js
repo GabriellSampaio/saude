@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Text, SafeAreaView, TouchableOpacity, Image, ScrollView } from 'react-native';
-
+import { View, Text, SafeAreaView, TouchableOpacity, Image, ScrollView } from 'react-native';
+import styles from './style';
 
 const sangue = require('../../../assets/sangue.png');
 const agua = require('../../../assets/agua.png');
@@ -19,10 +19,8 @@ const Home = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                {}
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                    <Text style={styles.backButtonText}>{'<'}</Text>
-                </TouchableOpacity>
+                { }
+                
                 <Text style={styles.headerTitle}>Serviços</Text>
             </View>
 
@@ -61,78 +59,30 @@ const Home = ({ navigation }) => {
                         onPress={() => console.log('Outro Serviço Pressionado')}
                     />
                 </View>
-                {}
+                <View style={styles.row}>
+                    <ServiceButton
+                        label="Pressão"
+                        onPress={() => console.log('Pressão Pressionado')}
+                    />
+                    <ServiceButton
+                        label="Outro Serviço"
+                        onPress={() => console.log('Outro Serviço Pressionado')}
+                    />
+                </View>
+                <View style={styles.row}>
+                    <ServiceButton
+                        label="Pressão"
+                        onPress={() => console.log('Pressão Pressionado')}
+                    />
+                    <ServiceButton
+                        label="Outro Serviço"
+                        onPress={() => console.log('Outro Serviço Pressionado')}
+                    />
+                </View>
+
+                { }
             </ScrollView>
         </SafeAreaView>
     );
-};
-
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F0F2F5',
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        backgroundColor: '#FFFFFF',
-        borderBottomWidth: 1,
-        borderBottomColor: '#DDD',
-    },
-    backButton: {
-        padding: 10,
-    },
-    backButtonText: {
-        fontSize: 24,
-        color: '#0a66c2',
-        fontWeight: 'bold',
-    },
-    headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginLeft: 15,
-        color: '#333',
-    },
-    gridContainer: {
-        padding: 10,
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 15,
-    },
-    serviceButton: {
-        flex: 1,
-        margin: 5,
-        height: 150,
-        backgroundColor: '#FFFFFF',
-        borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 10,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    serviceIcon: {
-        width: 60,
-        height: 60,
-        marginBottom: 10,
-    },
-    serviceLabel: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#333',
-        textAlign: 'center',
-    },
-});
-
+}
 export default Home;
