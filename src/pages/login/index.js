@@ -1,42 +1,52 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView, ScrollView, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView, ScrollView, Image, ActivityIndicator } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import styles from './style';
+
+const API_URL = 'http://localhost:8000/api';
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    const emailTratado = email.trim().toLowerCase();
-    const senhaTratada = senha.trim();
-
-    if (!emailTratado || !senhaTratada) {
+    if (!email || !senha) {
       Alert.alert("Atenção", "Por favor, preencha o email e a senha.");
       return;
     }
 
+    setIsLoading(true);
+
+    const credentials = {
+      email: email.trim().toLowerCase(),
+      password: senha.trim(),
+    };
+
     try {
-      const jsonValue = await AsyncStorage.getItem('@user_data');
-
-      if (jsonValue != null) {
-        const userData = JSON.parse(jsonValue);
-
-        if (userData.email.trim().toLowerCase() === emailTratado && userData.senha.trim() === senhaTratada) {
-
-
-          console.log("Login BEM-SUCEDIDO. Navegando DIRETAMENTE para Home...");
-          navigation.navigate("Home");
-          // --------------------
-
-        } else {
-          Alert.alert("Erro", "Email ou senha incorretos.");
+      const response = await axios.post(`${API_URL}/login`, credentials, {
+        headers: {
+          'Accept': 'application/json',
         }
+      });
+
+      const { access_token, user } = response.data;
+
+      await AsyncStorage.setItem('@auth_token', access_token);
+      await AsyncStorage.setItem('@user_data', JSON.stringify(user));
+      
+      navigation.navigate("Home");
+
+    } catch (error) {
+      if (error.response && (error.response.status === 401 || error.response.status === 422)) {
+        Alert.alert("Erro de Login", "Email ou senha incorretos.");
       } else {
-        Alert.alert("Erro", "Nenhum usuário cadastrado. Por favor, realize o cadastro primeiro.");
+        console.error("Erro ao fazer login:", error);
+        Alert.alert("Erro", "Não foi possível realizar o login. Tente novamente.");
       }
-    } catch (e) {
-      Alert.alert("Erro", "Não foi possível realizar o login.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -44,47 +54,41 @@ export default function Login({ navigation }) {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={{ backgroundColor: '#FFFFFF' }}>
         <View style={styles.container}>
-
-
           <View style={styles.imgContainer}> 
             <View style={styles.imgCircle}>
-              <Image
-                source={require('../../../assets/logo.png')}
-                style={styles.logo}
-              />
+              <Image source={require('../../../assets/logo.png')} style={styles.logo} />
             </View>
           </View>
-
           <View style={styles.formContainer}>
             <Text style={styles.titulo}>Login</Text>
-
             <View style={styles.inputGroup}>
               <Text style={styles.label}>EMAIL</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Seu email"
-                placeholderTextColor="#ffffffff"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
             </View>
-
             <View style={styles.inputGroup}>
               <Text style={styles.label}>SENHA</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Sua senha"
-                placeholderTextColor="#ffffffff"
                 value={senha}
                 onChangeText={setSenha}
                 secureTextEntry
               />
             </View>
-
-            <TouchableOpacity style={styles.botao} onPress={handleLogin}>
-              <Text style={styles.botaoTexto}>Entrar</Text>
+            
+            <TouchableOpacity style={styles.botao} onPress={handleLogin} disabled={isLoading}>
+              {isLoading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={styles.botaoTexto}>Entrar</Text>
+              )}
             </TouchableOpacity>
 
             <View style={styles.cadastroContainer}>
