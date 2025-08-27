@@ -90,15 +90,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
   },
-  loginContainer: {
+  cadastroContainer: {
     marginTop: 25,
     alignItems: 'center',
   },
-  possuiContaText: {
+  naoPossuiContaText: {
     color: '#E0E0E0',
     fontSize: 14,
   },
-  loginLink: {
+  cadastroLink: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
