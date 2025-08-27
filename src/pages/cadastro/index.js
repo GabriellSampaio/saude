@@ -93,7 +93,7 @@ export default function Cadastro({ navigation }) {
           
           <TouchableOpacity style={styles.voltarContainer} onPress={() => step === 1 ? navigation.goBack() : setStep(1)}>
             <View style={styles.voltarCircle}>
-              <Text style={styles.voltarText}>←</Text>
+              <Text style={styles.voltarText}>←Voltar</Text>
             </View>
           </TouchableOpacity>
 
@@ -108,7 +108,7 @@ export default function Cadastro({ navigation }) {
                   <TextInput
                     style={styles.input}
                     placeholder="Nome Completo"
-                    placeholderTextColor="#A0A0A0"
+                    placeholderTextColor="#ffffffff"
                     value={userData.nome}
                     onChangeText={(text) => handleChange('nome', text)}
                   />
@@ -119,7 +119,7 @@ export default function Cadastro({ navigation }) {
                   <TextInput
                     style={styles.input}
                     placeholder="Email"
-                    placeholderTextColor="#A0A0A0"
+                    placeholderTextColor="#ffffffff"
                     value={userData.email}
                     onChangeText={(text) => handleChange('email', text)}
                     keyboardType="email-address"
@@ -132,7 +132,7 @@ export default function Cadastro({ navigation }) {
                   <TextInput
                     style={styles.input}
                     placeholder="Senha"
-                    placeholderTextColor="#A0A0A0"
+                    placeholderTextColor="#ffffffff"
                     value={userData.senha}
                     onChangeText={(text) => handleChange('senha', text)}
                     secureTextEntry
@@ -140,7 +140,7 @@ export default function Cadastro({ navigation }) {
                 </View>
 
                 <TouchableOpacity style={styles.botao} onPress={nextStep}>
-                  <Text style={styles.botaoTexto}>Avançar</Text>
+                  <Text style={styles.botaoTexto}>CADASTRAR</Text>
                 </TouchableOpacity>
               </>
             ) : (

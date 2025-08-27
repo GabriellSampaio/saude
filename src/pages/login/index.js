@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView, ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView, ScrollView, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './style';
 
@@ -18,13 +18,13 @@ export default function Login({ navigation }) {
 
     try {
       const jsonValue = await AsyncStorage.getItem('@user_data');
-      
+
       if (jsonValue != null) {
         const userData = JSON.parse(jsonValue);
 
         if (userData.email.trim().toLowerCase() === emailTratado && userData.senha.trim() === senhaTratada) {
-          
- 
+
+
           console.log("Login BEM-SUCEDIDO. Navegando DIRETAMENTE para Home...");
           navigation.navigate("Home");
           // --------------------
@@ -42,14 +42,18 @@ export default function Login({ navigation }) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={{backgroundColor: '#FFFFFF'}}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={{ backgroundColor: '#FFFFFF' }}>
         <View style={styles.container}>
-          
-          <TouchableOpacity style={styles.voltarContainer} onPress={() => navigation.goBack()}>
-            <View style={styles.voltarCircle}>
-              <Text style={styles.voltarText}>←</Text>
+
+
+          <View style={styles.imgContainer}> 
+            <View style={styles.imgCircle}>
+              <Image
+                source={require('../../../assets/logo.png')}
+                style={styles.logo}
+              />
             </View>
-          </TouchableOpacity>
+          </View>
 
           <View style={styles.formContainer}>
             <Text style={styles.titulo}>Login</Text>
@@ -59,7 +63,7 @@ export default function Login({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="Seu email"
-                placeholderTextColor="#A0A0A0"
+                placeholderTextColor="#ffffffff"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -72,7 +76,7 @@ export default function Login({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="Sua senha"
-                placeholderTextColor="#A0A0A0"
+                placeholderTextColor="#ffffffff"
                 value={senha}
                 onChangeText={setSenha}
                 secureTextEntry
