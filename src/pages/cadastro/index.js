@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView, SafeAreaView } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import styles from './style';
+
+const API_URL = 'http://localhost:8000/api';
 
 export default function Cadastro({ navigation }) {
   const [step, setStep] = useState(1);
@@ -20,6 +21,7 @@ export default function Cadastro({ navigation }) {
 
   const [loadingCep, setLoadingCep] = useState(false);
   const [cepError, setCepError] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const handleChange = (name, value) => {
     setUserData({ ...userData, [name]: value });
@@ -65,16 +67,44 @@ export default function Cadastro({ navigation }) {
       }
     }
 
-    try {
-      const jsonValue = JSON.stringify(userData);
-      await AsyncStorage.setItem('@user_data', jsonValue);
-      
-      Alert.alert("Sucesso!", "Cadastro realizado com sucesso.", [
-        { text: "OK", onPress: () => navigation.navigate("Login") }
-      ]);
+    setIsRegistering(true);
 
-    } catch (e) {
-      Alert.alert("Erro", "Não foi possível salvar os dados do cadastro.");
+    const apiPayload = {
+        name: userData.nome,
+        email: userData.email,
+        password: userData.senha,
+        cep: userData.cep,
+        logradouro: userData.logradouro,
+        numero: userData.numero,
+        bairro: userData.bairro,
+        cidade: userData.cidade,
+        uf: userData.uf,
+    };
+
+    try {
+      await axios.post(`${API_URL}/users`, apiPayload, {
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+      
+      Alert.alert("Sucesso!", "Cadastro realizado com sucesso!");
+      navigation.navigate("Login");
+
+    } catch (error) {
+      if (error.response && error.response.status === 422) {
+        const errors = error.response.data.errors;
+        let errorMessage = 'Corrija os seguintes erros:\n';
+        for (const key in errors) {
+          errorMessage += `- ${errors[key][0]}\n`;
+        }
+        Alert.alert('Erro de Validação', errorMessage);
+      } else {
+        console.error('Erro ao cadastrar:', error);
+        Alert.alert('Erro no Cadastro', 'Não foi possível realizar o cadastro. Verifique sua conexão e tente novamente.');
+      }
+    } finally {
+      setIsRegistering(false);
     }
   };
 
@@ -98,129 +128,41 @@ export default function Cadastro({ navigation }) {
           </TouchableOpacity>
 
           <View style={styles.formContainer}>
-
             <Text style={styles.titulo}>Cadastre-se</Text>
 
             {step === 1 ? (
               <>
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>NOME</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Nome Completo"
-                    placeholderTextColor="#ffffffff"
-                    value={userData.nome}
-                    onChangeText={(text) => handleChange('nome', text)}
-                  />
+                  <TextInput style={styles.input} placeholder="Nome Completo" value={userData.nome} onChangeText={(text) => handleChange('nome', text)} />
                 </View>
-                
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>EMAIL</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Email"
-                    placeholderTextColor="#ffffffff"
-                    value={userData.email}
-                    onChangeText={(text) => handleChange('email', text)}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                  />
+                  <TextInput style={styles.input} placeholder="Email" value={userData.email} onChangeText={(text) => handleChange('email', text)} keyboardType="email-address" autoCapitalize="none" />
                 </View>
-
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>SENHA</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Senha"
-                    placeholderTextColor="#ffffffff"
-                    value={userData.senha}
-                    onChangeText={(text) => handleChange('senha', text)}
-                    secureTextEntry
-                  />
+                  <TextInput style={styles.input} placeholder="Senha" value={userData.senha} onChangeText={(text) => handleChange('senha', text)} secureTextEntry />
                 </View>
-
                 <TouchableOpacity style={styles.botao} onPress={nextStep}>
-                  <Text style={styles.botaoTexto}>CADASTRAR</Text>
+                  <Text style={styles.botaoTexto}>CONTINUAR</Text>
                 </TouchableOpacity>
               </>
             ) : (
               <>
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>CEP</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="CEP"
-                    placeholderTextColor="#A0A0A0"
-                    value={userData.cep}
-                    onChangeText={(text) => handleChange('cep', text)}
-                    keyboardType="numeric"
-                    onBlur={handleCepBlur}
-                    maxLength={9}
-                  />
-                  {loadingCep && <ActivityIndicator size="small" color="#fff" style={{marginTop: 5}} />}
-                  {cepError ? <Text style={styles.errorText}>{cepError}</Text> : null}
-                </View>
-                
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>RUA</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Rua / Logradouro"
-                    placeholderTextColor="#A0A0A0"
-                    value={userData.logradouro}
-                    onChangeText={(text) => handleChange('logradouro', text)}
-                  />
-                </View>
+                <View style={styles.inputGroup}><Text style={styles.label}>CEP</Text><TextInput style={styles.input} placeholder="CEP" value={userData.cep} onChangeText={(text) => handleChange('cep', text)} keyboardType="numeric" onBlur={handleCepBlur} maxLength={9} />{loadingCep && <ActivityIndicator size="small" color="#fff" style={{marginTop: 5}} />}{cepError ? <Text style={styles.errorText}>{cepError}</Text> : null}</View>
+                <View style={styles.inputGroup}><Text style={styles.label}>RUA</Text><TextInput style={styles.input} placeholder="Rua / Logradouro" value={userData.logradouro} onChangeText={(text) => handleChange('logradouro', text)} /></View>
+                <View style={styles.inputGroup}><Text style={styles.label}>NÚMERO</Text><TextInput style={styles.input} placeholder="Número" value={userData.numero} onChangeText={(text) => handleChange('numero', text)} keyboardType="numeric" /></View>
+                <View style={styles.inputGroup}><Text style={styles.label}>BAIRRO</Text><TextInput style={styles.input} placeholder="Bairro" value={userData.bairro} onChangeText={(text) => handleChange('bairro', text)} /></View>
+                <View style={styles.inputGroup}><Text style={styles.label}>CIDADE</Text><TextInput style={styles.input} placeholder="Cidade" value={userData.cidade} onChangeText={(text) => handleChange('cidade', text)} /></View>
+                <View style={styles.inputGroup}><Text style={styles.label}>UF</Text><TextInput style={styles.input} placeholder="UF" value={userData.uf} onChangeText={(text) => handleChange('uf', text)} maxLength={2} autoCapitalize="characters" /></View>
 
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>NÚMERO</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Número"
-                    placeholderTextColor="#A0A0A0"
-                    value={userData.numero}
-                    onChangeText={(text) => handleChange('numero', text)}
-                    keyboardType="numeric"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>BAIRRO</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Bairro"
-                    placeholderTextColor="#A0A0A0"
-                    value={userData.bairro}
-                    onChangeText={(text) => handleChange('bairro', text)}
-                  />
-                </View>
-                
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>CIDADE</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Cidade"
-                    placeholderTextColor="#A0A0A0"
-                    value={userData.cidade}
-                    onChangeText={(text) => handleChange('cidade', text)}
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>UF</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="UF"
-                    placeholderTextColor="#A0A0A0"
-                    value={userData.uf}
-                    onChangeText={(text) => handleChange('uf', text)}
-                    maxLength={2}
-                    autoCapitalize="characters"
-                  />
-                </View>
-
-                <TouchableOpacity style={styles.botao} onPress={handleRegister}>
-                  <Text style={styles.botaoTexto}>Finalizar Cadastro</Text>
+                <TouchableOpacity style={styles.botao} onPress={handleRegister} disabled={isRegistering}>
+                  {isRegistering ? (
+                    <ActivityIndicator color="#FFFFFF" />
+                  ) : (
+                    <Text style={styles.botaoTexto}>Finalizar Cadastro</Text>
+                  )}
                 </TouchableOpacity>
               </>
             )}
