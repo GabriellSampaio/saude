@@ -97,6 +97,79 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 18,
     },
+  
+    label: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 8,
+        alignSelf: 'flex-start',
+    },
+    botaoSelecionarTipo: {
+        backgroundColor: '#f0f0f0',
+        borderRadius: 8,
+        paddingVertical: 15,
+        paddingHorizontal: 12,
+        width: '100%',
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: '#ddd',
+    },
+    botaoSelecionarTipoTexto: {
+        fontSize: 16,
+        color: '#555',
+    },
+
+    
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fundo escurecido
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 25,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+        width: '90%',
+        maxHeight: '80%',
+    },
+    modalTitulo: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 15,
+    },
+    flatList: {
+        width: '100%',
+    },
+    itemModal: {
+        padding: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
+        width: '100%',
+    },
+    itemModalTexto: {
+        fontSize: 18,
+    },
+    botaoFecharModal: {
+        marginTop: 15,
+        backgroundColor: '#2196F3',
+        borderRadius: 10,
+        padding: 10,
+        elevation: 2,
+    },
+    botaoFecharModalTexto: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
 });
 
 export default styles;

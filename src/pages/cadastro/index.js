@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, Scro
 import axios from 'axios';
 import styles from './style';
 
-const API_URL = 'http://localhost:8000/api';
+const API_URL = 'http://10.67.5.83:8000/api/users';
 
 export default function Cadastro({ navigation }) {
   const [step, setStep] = useState(1);
