@@ -6,24 +6,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     justifyContent: 'flex-end',
   },
-    imgContainer: {
+  imgContainer: {
     position: 'absolute',
     top: 35,
     left: '35%',
     zIndex: 10,
   },
-  
+
   imgCircle: {
-    width: 120, 
+    width: 120,
     height: 120,
-    borderRadius: 60, 
+    borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
   },
   logo: {
-    width: 80, 
-    height: 80, 
-    resizeMode: 'contain', 
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
   },
 
   formContainer: {
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 15,
     borderRadius: 20,
-    color: '#fff',
+    color: '#ffffffff',
     fontSize: 16,
   },
   botao: {

@@ -35,7 +35,7 @@ export default function Login({ navigation }) {
 
       await AsyncStorage.setItem('@auth_token', access_token);
       await AsyncStorage.setItem('@user_data', JSON.stringify(user));
-      
+
       navigation.navigate("Home");
 
     } catch (error) {
@@ -54,7 +54,7 @@ export default function Login({ navigation }) {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={{ backgroundColor: '#FFFFFF' }}>
         <View style={styles.container}>
-          <View style={styles.imgContainer}> 
+          <View style={styles.imgContainer}>
             <View style={styles.imgCircle}>
               <Image source={require('../../../assets/logo.png')} style={styles.logo} />
             </View>
@@ -65,7 +65,8 @@ export default function Login({ navigation }) {
               <Text style={styles.label}>EMAIL</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Seu email"
+                placeholder="Seu email"                
+                placeholderTextColor="#ffffffc5"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -77,12 +78,13 @@ export default function Login({ navigation }) {
               <TextInput
                 style={styles.input}
                 placeholder="Sua senha"
+                placeholderTextColor="#ffffffc5"
                 value={senha}
                 onChangeText={setSenha}
                 secureTextEntry
               />
             </View>
-            
+
             <TouchableOpacity style={styles.botao} onPress={handleLogin} disabled={isLoading}>
               {isLoading ? (
                 <ActivityIndicator color="#FFFFFF" />

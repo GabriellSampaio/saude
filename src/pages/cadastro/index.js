@@ -34,7 +34,7 @@ export default function Cadastro({ navigation }) {
       setUserData({ ...userData, logradouro: "", bairro: "", cidade: "", uf: "" });
       return;
     }
-    
+
     setLoadingCep(true);
     setCepError("");
 
@@ -70,15 +70,15 @@ export default function Cadastro({ navigation }) {
     setIsRegistering(true);
 
     const apiPayload = {
-        name: userData.nome,
-        email: userData.email,
-        password: userData.senha,
-        cep: userData.cep,
-        logradouro: userData.logradouro,
-        numero: userData.numero,
-        bairro: userData.bairro,
-        cidade: userData.cidade,
-        uf: userData.uf,
+      name: userData.nome,
+      email: userData.email,
+      password: userData.senha,
+      cep: userData.cep,
+      logradouro: userData.logradouro,
+      numero: userData.numero,
+      bairro: userData.bairro,
+      cidade: userData.cidade,
+      uf: userData.uf,
     };
 
     try {
@@ -87,7 +87,7 @@ export default function Cadastro({ navigation }) {
           'Accept': 'application/json',
         }
       });
-      
+
       Alert.alert("Sucesso!", "Cadastro realizado com sucesso!");
       navigation.navigate("Login");
 
@@ -115,12 +115,12 @@ export default function Cadastro({ navigation }) {
     }
     setStep(2);
   };
-  
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={{backgroundColor: '#FFFFFF'}}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={{ backgroundColor: '#FFFFFF' }}>
         <View style={styles.container}>
-          
+
           <TouchableOpacity style={styles.voltarContainer} onPress={() => step === 1 ? navigation.goBack() : setStep(1)}>
             <View style={styles.voltarCircle}>
               <Text style={styles.voltarText}>←Voltar</Text>
@@ -134,15 +134,15 @@ export default function Cadastro({ navigation }) {
               <>
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>NOME</Text>
-                  <TextInput style={styles.input} placeholder="Nome Completo" value={userData.nome} onChangeText={(text) => handleChange('nome', text)} />
+                  <TextInput style={styles.input} placeholder="Nome Completo" placeholderTextColor="#ffffffff" value={userData.nome} onChangeText={(text) => handleChange('nome', text)} />
                 </View>
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>EMAIL</Text>
-                  <TextInput style={styles.input} placeholder="Email" value={userData.email} onChangeText={(text) => handleChange('email', text)} keyboardType="email-address" autoCapitalize="none" />
+                  <TextInput style={styles.input} placeholder="Email" placeholderTextColor="#ffffffff" value={userData.email} onChangeText={(text) => handleChange('email', text)} keyboardType="email-address" autoCapitalize="none" />
                 </View>
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>SENHA</Text>
-                  <TextInput style={styles.input} placeholder="Senha" value={userData.senha} onChangeText={(text) => handleChange('senha', text)} secureTextEntry />
+                  <TextInput style={styles.input} placeholder="Senha" placeholderTextColor="#ffffffff" value={userData.senha} onChangeText={(text) => handleChange('senha', text)} secureTextEntry />
                 </View>
                 <TouchableOpacity style={styles.botao} onPress={nextStep}>
                   <Text style={styles.botaoTexto}>CONTINUAR</Text>
@@ -150,7 +150,7 @@ export default function Cadastro({ navigation }) {
               </>
             ) : (
               <>
-                <View style={styles.inputGroup}><Text style={styles.label}>CEP</Text><TextInput style={styles.input} placeholder="CEP" value={userData.cep} onChangeText={(text) => handleChange('cep', text)} keyboardType="numeric" onBlur={handleCepBlur} maxLength={9} />{loadingCep && <ActivityIndicator size="small" color="#fff" style={{marginTop: 5}} />}{cepError ? <Text style={styles.errorText}>{cepError}</Text> : null}</View>
+                <View style={styles.inputGroup}><Text style={styles.label}>CEP</Text><TextInput style={styles.input} placeholder="CEP" value={userData.cep} onChangeText={(text) => handleChange('cep', text)} keyboardType="numeric" onBlur={handleCepBlur} maxLength={9} />{loadingCep && <ActivityIndicator size="small" color="#fff" style={{ marginTop: 5 }} />}{cepError ? <Text style={styles.errorText}>{cepError}</Text> : null}</View>
                 <View style={styles.inputGroup}><Text style={styles.label}>RUA</Text><TextInput style={styles.input} placeholder="Rua / Logradouro" value={userData.logradouro} onChangeText={(text) => handleChange('logradouro', text)} /></View>
                 <View style={styles.inputGroup}><Text style={styles.label}>NÚMERO</Text><TextInput style={styles.input} placeholder="Número" value={userData.numero} onChangeText={(text) => handleChange('numero', text)} keyboardType="numeric" /></View>
                 <View style={styles.inputGroup}><Text style={styles.label}>BAIRRO</Text><TextInput style={styles.input} placeholder="Bairro" value={userData.bairro} onChangeText={(text) => handleChange('bairro', text)} /></View>
