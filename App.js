@@ -6,14 +6,14 @@ import Cadastro from "./src/pages/cadastro";
 import Home from "./src/pages/home"; 
 import Login from "./src/pages/login"; 
 import Exames from "./src/pages/exames";
-
+import Splash from "./src/pages/splash";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
       {}
-      <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
         {}
         <Stack.Screen name="Splash" component={Splash} />
         <Stack.Screen name="Login" component={Login} />
