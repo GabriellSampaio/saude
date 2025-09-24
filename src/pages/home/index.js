@@ -1,102 +1,124 @@
-import React from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, SafeAreaView, Pressable, Image, FlatList, Alert, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Animatable from 'react-native-animatable';
 import styles from './style';
-const sangue = require('../../../assets/sangue.png');
-const agua = require('../../../assets/agua.png');
-const alergia = require('../../../assets/alergia.png');
-const remedio = require('../../../assets/remedio.png');
-const exames = require ('../../../assets/remedio.png')
 
-const ServiceButton = ({ icon, label, onPress }) => (
-    <TouchableOpacity style={styles.serviceButton} onPress={onPress}>
-        {icon && <Image source={icon} style={styles.serviceIcon} />}
-        <Text style={styles.serviceLabel}>{label}</Text>
-    </TouchableOpacity>
+const icons = {
+    defaultIcon: require('../../../assets/sangue.png'),
+};
+
+const servicos = [
+    { label: 'Sangue', icon:  require('../../../assets/sangue.png'), onPress: () => console.log('Sangue Pressionado') },
+    { label: 'Água', icon: require('../../../assets/agua.png'), screen: 'Agua' },
+    { label: 'Remédios', icon: require('../../../assets/remedio.png'), screen: 'Remedios' },
+    { label: 'Alergias', icon: require('../../../assets/alergia.png'), screen: 'Alergias' },
+    { label: 'Sintomas', icon: require('../../../assets/sintomas.png'), onPress: () => console.log('Sintomas Pressionado') },
+    { label: 'Exames', icon: require('../../../assets/exame.png'), screen: 'Exames' },
+    { label: 'Vacinas', icon: require('../../../assets/vacina.png'), onPress: () => console.log('Vacinas Pressionado') },
+    { label: 'Meditação', icon: icons.defaultIcon, onPress: () => console.log('Meditação Pressionado') },
+    { label: 'Frutas', icon: require('../../../assets/fruta.png'), onPress: () => console.log('Frutas Pressionado') },
+    { label: 'Emergência', icon: require('../../../assets/emergencia.png'), onPress: () => console.log('Emergência Pressionado') },
+    { label: 'Pressão', icon: require('../../../assets/pressao.png'), onPress: () => console.log('Pressão Pressionado') },
+    { label: 'Glicemia', icon: require('../../../assets/glicemia.png'), onPress: () => console.log('Glicemia Pressionado') },
+];
+
+const ServiceButton = ({ icon, label, onPress, index }) => (
+    <Animatable.View
+        animation="zoomIn"
+        duration={500}
+        delay={index * 100}
+        style={styles.serviceButtonContainer}
+    >
+        <Pressable
+            style={({ pressed }) => [
+                styles.serviceButton,
+                pressed && styles.serviceButtonPressed
+            ]}
+            onPress={onPress}
+        >
+            {icon && <Image source={icon} style={styles.serviceIcon} />}
+            <Text style={styles.serviceLabel}>{label}</Text>
+        </Pressable>
+    </Animatable.View>
 );
 
 const Home = ({ navigation }) => {
-    
+    const [userName, setUserName] = useState('');
+    const [greeting, setGreeting] = useState('');
+
+    useEffect(() => {
+        const loadUserData = async () => {
+            const userDataString = await AsyncStorage.getItem('user_data');
+            if (userDataString) {
+                const userData = JSON.parse(userDataString);
+                setUserName(userData.name.split(' ')[0]);
+            }
+        };
+
+        const getGreetingMessage = () => {
+            const hour = new Date().getHours();
+            if (hour < 12) return 'Bom dia';
+            if (hour < 18) return 'Boa tarde';
+            return 'Boa noite';
+        };
+
+        loadUserData();
+        setGreeting(getGreetingMessage());
+    }, []);
     
     const handleLogout = async () => {
         try {
-           
-            await AsyncStorage.removeItem('@user_data');
+            await AsyncStorage.removeItem('user_token');
+            await AsyncStorage.removeItem('user_data');
             navigation.replace('Login'); 
         } catch (e) {
             Alert.alert("Erro", "Não foi possível fazer o logout.");
         }
     };
 
+    const handlePress = (servico) => {
+        if (servico.screen) {
+            navigation.navigate(servico.screen);
+        } else if (servico.onPress) {
+            servico.onPress();
+        }
+    };
+
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.headerTitle}>Serviços</Text>
-                
-                {}
-                <TouchableOpacity onPress={handleLogout}>
-                    <Text style={styles.logoutButtonText}>Sair</Text>
-                </TouchableOpacity>
-            </View>
+            <LinearGradient
+                colors={['#0d214f', '#2a5a8a']}
+                style={styles.header}
+            >
+                <Text style={styles.greetingText}>{greeting},</Text>
+                <Text style={styles.userNameText}>{userName}</Text>
+            </LinearGradient>
 
-            <ScrollView contentContainerStyle={styles.gridContainer}>
-                <View style={styles.row}>
+            <FlatList
+                data={servicos}
+                renderItem={({ item, index }) => (
                     <ServiceButton
-                        icon={sangue}
-                        label="Sangue"
-                        onPress={() => console.log('Sangue Pressionado')}
+                        icon={item.icon}
+                        label={item.label}
+                        onPress={() => handlePress(item)}
+                        index={index}
                     />
-                    <ServiceButton
-                        icon={agua}
-                        label="Água"
-                        onPress={() => console.log('Água Pressionado')}
-                    />
-                </View>
-                <View style={styles.row}>
-                    <ServiceButton
-                        icon={alergia}
-                        label="Alergias"
-                        onPress={() => console.log('Alergias Pressionado')}
-                    />
-                    <ServiceButton
-                        icon={remedio}
-                        label="Remédios"
-                        onPress={() => console.log('Remédios Pressionado')}
-                    />
-                </View>
-                <View style={styles.row}>
-                    <ServiceButton
-                        label="Pressão"
-                        onPress={() => console.log('Pressão Pressionado')}
-                    />
-                    <ServiceButton
-                        icon= {exames}
-                        label="Exames"
-                         onPress={() => navigation.navigate('Exames')}
-                    />
-                </View>
-                <View style={styles.row}>
-                    <ServiceButton
-                        label="Pressão"
-                        onPress={() => console.log('Pressão Pressionado')}
-                    />
-                    <ServiceButton
-                        label="Outro Serviço"
-                        onPress={() => console.log('Outro Serviço Pressionado')}
-                    />
-                </View>
-                <View style={styles.row}>
-                    <ServiceButton
-                        label="Pressão"
-                        onPress={() => console.log('Pressão Pressionado')}
-                    />
-                    <ServiceButton
-                        label="Outro Serviço"
-                        onPress={() => console.log('Outro Serviço Pressionado')}
-                    />
-                </View>
-            </ScrollView>
+                )}
+                keyExtractor={(item, index) => index.toString()}
+                numColumns={2}
+                contentContainerStyle={styles.gridContainer}
+                ListFooterComponent={
+                    <Animatable.View animation="fadeInUp" duration={800} delay={500}>
+                        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                            <Text style={styles.logoutButtonText}>Deslogar</Text>
+                        </TouchableOpacity>
+                    </Animatable.View>
+                }
+            />
         </SafeAreaView>
     );
 }
+
 export default Home;
