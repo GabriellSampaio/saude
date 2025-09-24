@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-
 import {
     View,
     Text,
@@ -24,20 +23,15 @@ const TIPOS_DE_EXAME = [
 ];
 
 export default function ExamesScreen({ navigation }) {
-    // --- ESTADOS DO FORMULÁRIO DE UPLOAD ---
     const [imagem, setImagem] = useState(null);
     const [tipoExame, setTipoExame] = useState(null);
     const [modalVisivel, setModalVisivel] = useState(false);
     const [loading, setLoading] = useState(false);
-
-    // --- NOVOS ESTADOS PARA A LISTA E EDIÇÃO ---
     const [listaExames, setListaExames] = useState([]);
     const [loadingExames, setLoadingExames] = useState(true);
     const [modalUpdateVisivel, setModalUpdateVisivel] = useState(false);
     const [exameSelecionado, setExameSelecionado] = useState(null);
     const [novoTipoExame, setNovoTipoExame] = useState('');
-
-    // --- FUNÇÕES DE LÓGICA ---
 
     const buscarExames = async () => {
         setLoadingExames(true);
@@ -45,7 +39,7 @@ export default function ExamesScreen({ navigation }) {
             const response = await api.get('/exames');
             setListaExames(response.data);
         } catch (error) {
-            console.error("Erro ao buscar exames:", error);
+            console.error("Erro ao buscar exames:", error.response);
             Alert.alert("Erro", "Não foi possível carregar seus exames.");
         } finally {
             setLoadingExames(false);
@@ -93,12 +87,6 @@ export default function ExamesScreen({ navigation }) {
         }
         setLoading(true);
         try {
-            const userToken = await AsyncStorage.getItem('user_token');
-            if (!userToken) {
-                Alert.alert("Erro de Autenticação", "Usuário não autenticado.");
-                setLoading(false);
-                return;
-            }
             const formData = new FormData();
             const nomeArquivo = `exame_${Date.now()}.jpg`;
             if (Platform.OS === 'web') {
@@ -110,9 +98,11 @@ export default function ExamesScreen({ navigation }) {
                 formData.append('image', { uri: imagem, name: nomeArquivo, type: tipoArquivo });
             }
             formData.append('tipo_exame', tipoExame.nome);
+            
             await api.post('/exames', formData, {
-                headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${userToken}` },
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
+
             Alert.alert("Sucesso", `Exame "${tipoExame.nome}" salvo com sucesso!`);
             setImagem(null);
             setTipoExame(null);
@@ -128,7 +118,8 @@ export default function ExamesScreen({ navigation }) {
     const handleDelete = (exameId) => {
         Alert.alert("Confirmar Exclusão", "Deseja mover este exame para a lixeira?", [
             { text: "Cancelar", style: "cancel" },
-            { text: "Sim, Excluir", style: "destructive",
+            {
+                text: "Sim, Excluir", style: "destructive",
                 onPress: async () => {
                     try {
                         await api.delete(`/exames/${exameId}`);
@@ -152,11 +143,21 @@ export default function ExamesScreen({ navigation }) {
             buscarExames();
         } catch (error) { Alert.alert("Erro", "Não foi possível atualizar o exame."); }
     };
-    
-    // --- COMPONENTES DE RENDERIZAÇÃO ---
 
+    const renderItemTipoExame = ({ item }) => (
+        <TouchableOpacity
+            style={styles.itemModal}
+            onPress={() => {
+                setTipoExame(item);
+                setModalVisivel(false);
+            }}
+        >
+            <Text style={styles.itemModalTexto}>{item.nome}</Text>
+        </TouchableOpacity>
+    );
+    
     const renderUploadForm = () => (
-        <View style={styles.container}>
+        <View style={styles.uploadContainer}>
             <Text style={styles.titulo}>Anexar Exame</Text>
             <Text style={styles.subtitulo}>Envie uma foto do seu documento para análise</Text>
             <Text style={styles.label}>Tipo de Exame</Text>
@@ -196,23 +197,30 @@ export default function ExamesScreen({ navigation }) {
         </View>
     );
 
-    const renderExameItem = ({ item }) => (
-        <View style={styles.exameItemContainer}>
-            <Image source={{ uri: `http://SEU_IP_AQUI:8000/storage/${item.image_path}` }} style={styles.exameThumbnail} />
-            <View style={styles.exameInfo}>
-                <Text style={styles.exameTipo} numberOfLines={2}>{item.tipo_exame}</Text>
-                <Text style={styles.exameData}>Enviado em: {new Date(item.created_at).toLocaleDateString('pt-BR')}</Text>
+    const renderExameItem = ({ item }) => { 
+        const imageUrl = `${api.defaults.baseURL.replace('/api', '')}/storage/${item.image_path}`;
+        
+        return (
+            <View style={styles.exameItemContainer}>
+                <Image 
+                    source={{ uri: imageUrl }} 
+                    style={styles.exameThumbnail} 
+                />
+                <View style={styles.exameInfo}>
+                    <Text style={styles.exameTipo} numberOfLines={2}>{item.tipo_exame}</Text>
+                    <Text style={styles.exameData}>Enviado em: {new Date(item.created_at).toLocaleDateString('pt-BR')}</Text>
+                </View>
+                <View style={styles.exameActions}>
+                    <TouchableOpacity onPress={() => { setExameSelecionado(item); setNovoTipoExame(item.tipo_exame); setModalUpdateVisivel(true); }}>
+                        <Text style={styles.actionTextEdit}>Editar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDelete(item.id)}>
+                        <Text style={styles.actionTextDelete}>Excluir</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-            <View style={styles.exameActions}>
-                <TouchableOpacity onPress={() => { setExameSelecionado(item); setNovoTipoExame(item.tipo_exame); setModalUpdateVisivel(true); }}>
-                    <Text style={styles.actionTextEdit}>Editar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                    <Text style={styles.actionTextDelete}>Excluir</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
-    );
+        );
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -224,16 +232,40 @@ export default function ExamesScreen({ navigation }) {
                     renderItem={renderExameItem}
                     keyExtractor={(item) => item.id.toString()}
                     ListHeaderComponent={renderUploadForm}
-                    ListEmptyComponent={() => <Text style={styles.listaVazia}>Você ainda não enviou nenhum exame.</Text>}
+                    ListEmptyComponent={() => (
+                        <View style={styles.listaVaziaContainer}>
+                            <Text style={styles.listaVazia}>Você ainda não enviou nenhum exame.</Text>
+                        </View>
+                    )}
+                    contentContainerStyle={styles.listContentContainer}
                 />
             )}
 
-            {/* Modal para selecionar o tipo de exame (do formulário) */}
-            <Modal animationType="slide" transparent={true} visible={modalVisivel} onRequestClose={() => setModalVisivel(false)}>
-                {/* ... O JSX do seu modal de seleção de tipo de exame ... */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisivel}
+                onRequestClose={() => setModalVisivel(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalTitulo}>Selecione o Tipo de Exame</Text>
+                        <FlatList
+                            data={TIPOS_DE_EXAME}
+                            renderItem={renderItemTipoExame}
+                            keyExtractor={(item) => item.id}
+                            style={styles.flatList}
+                        />
+                        <TouchableOpacity
+                            style={styles.botaoFecharModal}
+                            onPress={() => setModalVisivel(false)}
+                        >
+                            <Text style={styles.botaoFecharModalTexto}>Cancelar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
             </Modal>
             
-            {/* Modal para ATUALIZAR o exame */}
             <Modal visible={modalUpdateVisivel} transparent={true} animationType="slide" onRequestClose={() => setModalUpdateVisivel(false)}>
                 <View style={styles.modalContainer}>
                     <View style={styles.modalView}>
