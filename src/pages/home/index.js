@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, Pressable, Image, FlatList, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, Pressable, Image, FlatList, Alert, TouchableOpacity, Modal, TextInput, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Animatable from 'react-native-animatable';
+import api from '../../services/api';
 import styles from './style';
 
 const icons = {
@@ -10,7 +11,7 @@ const icons = {
 };
 
 const servicos = [
-    { label: 'Sangue', icon:  require('../../../assets/sangue.png'), onPress: () => console.log('Sangue Pressionado') },
+    { label: 'Sangue', icon: require('../../../assets/sangue.png'), onPress: () => console.log('Sangue Pressionado') },
     { label: 'Água', icon: require('../../../assets/agua.png'), screen: 'Agua' },
     { label: 'Remédios', icon: require('../../../assets/remedio.png'), screen: 'Remedios' },
     { label: 'Alergias', icon: require('../../../assets/alergia.png'), screen: 'Alergias' },
@@ -47,23 +48,26 @@ const ServiceButton = ({ icon, label, onPress, index }) => (
 const Home = ({ navigation }) => {
     const [userName, setUserName] = useState('');
     const [greeting, setGreeting] = useState('');
+    const [isProfileModalVisible, setProfileModalVisible] = useState(false);
+    const [userData, setUserData] = useState(null);
+
+    const loadUserData = async () => {
+        const userDataString = await AsyncStorage.getItem('user_data');
+        if (userDataString) {
+            const user = JSON.parse(userDataString);
+            setUserData(user);
+            setUserName(user.name.split(' ')[0]);
+        }
+    };
+
+    const getGreetingMessage = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Bom dia';
+        if (hour < 18) return 'Boa tarde';
+        return 'Boa noite';
+    };
 
     useEffect(() => {
-        const loadUserData = async () => {
-            const userDataString = await AsyncStorage.getItem('user_data');
-            if (userDataString) {
-                const userData = JSON.parse(userDataString);
-                setUserName(userData.name.split(' ')[0]);
-            }
-        };
-
-        const getGreetingMessage = () => {
-            const hour = new Date().getHours();
-            if (hour < 12) return 'Bom dia';
-            if (hour < 18) return 'Boa tarde';
-            return 'Boa noite';
-        };
-
         loadUserData();
         setGreeting(getGreetingMessage());
     }, []);
@@ -86,14 +90,66 @@ const Home = ({ navigation }) => {
         }
     };
 
+    const handleUpdateProfile = async () => {
+        if (!userData.name || !userData.email) {
+            Alert.alert("Erro", "Nome e email não podem ser vazios.");
+            return;
+        }
+        try {
+            const response = await api.put('/user/profile', {
+                name: userData.name,
+                email: userData.email,
+            });
+            await AsyncStorage.setItem('user_data', JSON.stringify(response.data));
+            loadUserData();
+            setProfileModalVisible(false);
+            Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
+        } catch (error) {
+            console.error(error.response.data);
+            Alert.alert("Erro", "Não foi possível atualizar o perfil.");
+        }
+    };
+
+    const handleDeleteProfile = () => {
+        Alert.alert(
+            "Desativar Conta",
+            "Você tem certeza? Esta ação fará o logout e inativará sua conta.",
+            [
+                { text: "Cancelar", style: "cancel" },
+                {
+                    text: "Sim, desativar",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            await api.delete('/user/profile');
+                            await AsyncStorage.clear();
+                            navigation.replace('Login');
+                        } catch (error) {
+                            Alert.alert("Erro", "Não foi possível desativar a conta.");
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <LinearGradient
                 colors={['#0d214f', '#2a5a8a']}
                 style={styles.header}
             >
-                <Text style={styles.greetingText}>{greeting},</Text>
-                <Text style={styles.userNameText}>{userName}</Text>
+                <View style={styles.headerContent}>
+                    <View>
+                        <Text style={styles.greetingText}>{greeting},</Text>
+                        <Text style={styles.userNameText}>{userName}</Text>
+                    </View>
+                    <TouchableOpacity onPress={() => setProfileModalVisible(true)} style={styles.menuButton}>
+                        <View style={styles.menuBar} />
+                        <View style={styles.menuBar} />
+                        <View style={styles.menuBar} />
+                    </TouchableOpacity>
+                </View>
             </LinearGradient>
 
             <FlatList
@@ -117,6 +173,51 @@ const Home = ({ navigation }) => {
                     </Animatable.View>
                 }
             />
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isProfileModalVisible}
+                onRequestClose={() => setProfileModalVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalTitle}>Meu Perfil</Text>
+                        
+                        <ScrollView style={{width: '100%'}}>
+                            <View style={{alignItems: 'center'}}>
+                                <Text style={styles.modalLabel}>Nome Completo</Text>
+                                <TextInput
+                                    style={styles.modalInput}
+                                    value={userData?.name}
+                                    onChangeText={(text) => setUserData({...userData, name: text})}
+                                />
+
+                                <Text style={styles.modalLabel}>Email</Text>
+                                <TextInput
+                                    style={styles.modalInput}
+                                    value={userData?.email}
+                                    onChangeText={(text) => setUserData({...userData, email: text})}
+                                    keyboardType="email-address"
+                                    autoCapitalize="none"
+                                />
+                            </View>
+                        </ScrollView>
+
+                        <TouchableOpacity style={styles.modalButtonSave} onPress={handleUpdateProfile}>
+                            <Text style={styles.modalButtonText}>Salvar Alterações</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.modalButtonClose} onPress={() => setProfileModalVisible(false)}>
+                            <Text style={styles.modalButtonCloseText}>Fechar</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.deleteAccountButton} onPress={handleDeleteProfile}>
+                            <Text style={styles.deleteAccountButtonText}>Desativar minha conta</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 }
