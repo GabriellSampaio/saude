@@ -23,16 +23,16 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
     },
     gridContainer: {
-        paddingHorizontal: 10, // Ajustado para alinhar melhor
+        paddingHorizontal: 10,
         paddingTop: 20,
     },
-    serviceButtonContainer: { // Container para o botão individual
+    serviceButtonContainer: { 
         flex: 1,
-        maxWidth: '50%', // Garante que cada item ocupe no máximo 50%
+        maxWidth: '50%', 
         padding: 8,
     },
     serviceButton: {
-        width: '100%', // Ocupa todo o espaço do container
+        width: '100%', 
         aspectRatio: 1,
         backgroundColor: '#FFFFFF',
         borderRadius: 20,

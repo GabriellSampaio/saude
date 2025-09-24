@@ -10,20 +10,18 @@ const icons = {
 };
 
 const servicos = [
-    { label: 'Sangue', icon: icons.defaultIcon, onPress: () => console.log('Sangue Pressionado') },
-    { label: 'Água', icon: icons.defaultIcon, screen: 'Agua' },
-    { label: 'Remédios', icon: icons.defaultIcon, screen: 'Remedios' },
-    { label: 'Alergias', icon: icons.defaultIcon, screen: 'Alergias' },
-    { label: 'Sintomas', icon: icons.defaultIcon, onPress: () => console.log('Sintomas Pressionado') },
-    { label: 'Exames', icon: icons.defaultIcon, screen: 'Exames' },
-    { label: 'Vacinas', icon: icons.defaultIcon, onPress: () => console.log('Vacinas Pressionado') },
+    { label: 'Sangue', icon:  require('../../../assets/sangue.png'), onPress: () => console.log('Sangue Pressionado') },
+    { label: 'Água', icon: require('../../../assets/agua.png'), screen: 'Agua' },
+    { label: 'Remédios', icon: require('../../../assets/remedio.png'), screen: 'Remedios' },
+    { label: 'Alergias', icon: require('../../../assets/alergia.png'), screen: 'Alergias' },
+    { label: 'Sintomas', icon: require('../../../assets/sintomas.png'), onPress: () => console.log('Sintomas Pressionado') },
+    { label: 'Exames', icon: require('../../../assets/exame.png'), screen: 'Exames' },
+    { label: 'Vacinas', icon: require('../../../assets/vacina.png'), onPress: () => console.log('Vacinas Pressionado') },
     { label: 'Meditação', icon: icons.defaultIcon, onPress: () => console.log('Meditação Pressionado') },
-    { label: 'Frutas', icon: icons.defaultIcon, onPress: () => console.log('Frutas Pressionado') },
-    { label: 'Dicas', icon: icons.defaultIcon, onPress: () => console.log('Dicas Pressionado') },
-    { label: 'Emergência', icon: icons.defaultIcon, onPress: () => console.log('Emergência Pressionado') },
-    { label: 'Pressão', icon: icons.defaultIcon, onPress: () => console.log('Pressão Pressionado') },
-    { label: 'Glicemia', icon: icons.defaultIcon, onPress: () => console.log('Glicemia Pressionado') },
-    { label: 'Dica do Dia', icon: icons.defaultIcon, onPress: () => console.log('Dica do Dia Pressionado') },
+    { label: 'Frutas', icon: require('../../../assets/fruta.png'), onPress: () => console.log('Frutas Pressionado') },
+    { label: 'Emergência', icon: require('../../../assets/emergencia.png'), onPress: () => console.log('Emergência Pressionado') },
+    { label: 'Pressão', icon: require('../../../assets/pressao.png'), onPress: () => console.log('Pressão Pressionado') },
+    { label: 'Glicemia', icon: require('../../../assets/glicemia.png'), onPress: () => console.log('Glicemia Pressionado') },
 ];
 
 const ServiceButton = ({ icon, label, onPress, index }) => (
