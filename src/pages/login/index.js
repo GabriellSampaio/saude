@@ -1,107 +1,119 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView, ScrollView, Image, ActivityIndicator } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
+import api from '../../services/api';
 import styles from './style';
 
-const API_URL = 'http://localhost:8000/api';
-
 export default function Login({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+    const [email, setEmail] = useState("");
+    const [senha, setSenha] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [loginError, setLoginError] = useState("");
 
-  const handleLogin = async () => {
-    if (!email || !senha) {
-      Alert.alert("Atenção", "Por favor, preencha o email e a senha.");
-      return;
-    }
+    const handleLogin = async () => {
+        setLoginError(""); 
 
-    setIsLoading(true);
-
-    const credentials = {
-      email: email.trim().toLowerCase(),
-      password: senha.trim(),
-    };
-
-    try {
-      const response = await axios.post(`${API_URL}/login`, credentials, {
-        headers: {
-          'Accept': 'application/json',
+        if (!email || !senha) {
+            setLoginError("Por favor, preencha o email e a senha.");
+            return;
         }
-      });
 
-      const { access_token, user } = response.data;
+        setIsLoading(true);
 
-      await AsyncStorage.setItem('@auth_token', access_token);
-      await AsyncStorage.setItem('@user_data', JSON.stringify(user));
+        const credentials = {
+            email: email.trim().toLowerCase(),
+            password: senha.trim(),
+        };
 
-      navigation.navigate("Home");
+        try {
+            const response = await api.post('/login', credentials);
 
-    } catch (error) {
-      if (error.response && (error.response.status === 401 || error.response.status === 422)) {
-        Alert.alert("Erro de Login", "Email ou senha incorretos.");
-      } else {
-        console.error("Erro ao fazer login:", error);
-        Alert.alert("Erro", "Não foi possível realizar o login. Tente novamente.");
-      }
-    } finally {
-      setIsLoading(false);
+            const userToken = response.data.access_token;
+            const user = response.data.user;
+
+            if (userToken) {
+                await AsyncStorage.setItem('user_token', userToken);
+                await AsyncStorage.setItem('user_data', JSON.stringify(user));
+                
+                // Log para confirmar que o token foi salvo
+                console.log('[LoginScreen] Token salvo com sucesso:', userToken);
+                
+                navigation.navigate("Home");
+            } else {
+                setLoginError("A resposta da API não continha um token.");
+            }
+
+        } catch (error) {
+            if (error.response && (error.response.status === 401 || error.response.status === 422)) {
+                setLoginError("Email ou senha incorretos.");
+            } else {
+                console.error("Erro ao fazer login:", error);
+                setLoginError("Não foi possível realizar o login. Verifique sua conexão.");
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    const handleInputChange = (setter, value) => {
+        if (loginError) {
+            setLoginError("");
+        }
+        setter(value);
     }
-  };
 
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={{ backgroundColor: '#FFFFFF' }}>
-        <View style={styles.container}>
-          <View style={styles.imgContainer}>
-            <View style={styles.imgCircle}>
-              <Image source={require('../../../assets/logo.png')} style={styles.logo} />
-            </View>
-          </View>
-          <View style={styles.formContainer}>
-            <Text style={styles.titulo}>Login</Text>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>EMAIL</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Seu email"                
-                placeholderTextColor="#ffffffc5"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>SENHA</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Sua senha"
-                placeholderTextColor="#ffffffc5"
-                value={senha}
-                onChangeText={setSenha}
-                secureTextEntry
-              />
-            </View>
+    return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={{ backgroundColor: '#FFFFFF' }}>
+                <View style={styles.container}>
+                    <View style={styles.imgContainer}> 
+                        <View style={styles.imgCircle}>
+                            <Image source={require('../../../assets/logo.png')} style={styles.logo} />
+                        </View>
+                    </View>
+                    <View style={styles.formContainer}>
+                        <Text style={styles.titulo}>Login</Text>
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>EMAIL</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Seu email"
+                                value={email}
+                                onChangeText={(text) => handleInputChange(setEmail, text)}
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                            />
+                        </View>
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>SENHA</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Sua senha"
+                                value={senha}
+                                onChangeText={(text) => handleInputChange(setSenha, text)}
+                                secureTextEntry
+                            />
+                        </View>
 
-            <TouchableOpacity style={styles.botao} onPress={handleLogin} disabled={isLoading}>
-              {isLoading ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <Text style={styles.botaoTexto}>Entrar</Text>
-              )}
-            </TouchableOpacity>
+                        {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null}
+                        
+                        <TouchableOpacity style={styles.botao} onPress={handleLogin} disabled={isLoading}>
+                            {isLoading ? (
+                                <ActivityIndicator color="#FFFFFF" />
+                            ) : (
+                                <Text style={styles.botaoTexto}>Entrar</Text>
+                            )}
+                        </TouchableOpacity>
 
-            <View style={styles.cadastroContainer}>
-              <Text style={styles.naoPossuiContaText}>não possui conta?</Text>
-              <TouchableOpacity onPress={() => navigation.navigate("Cadastro")}>
-                <Text style={styles.cadastroLink}>cadastre-se</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+                        <View style={styles.cadastroContainer}>
+                            <Text style={styles.naoPossuiContaText}>não possui conta?</Text>
+                            <TouchableOpacity onPress={() => navigation.navigate("Cadastro")}>
+                                <Text style={styles.cadastroLink}>cadastre-se</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+    );
 }
