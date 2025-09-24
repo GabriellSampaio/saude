@@ -1,70 +1,85 @@
 import { StyleSheet } from 'react-native';
 
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#F0F2F5',
     },
     header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        backgroundColor: '#FFFFFF',
-        borderBottomWidth: 1,
-        borderBottomColor: '#DDD',
+        paddingTop: 50,
+        paddingBottom: 30,
+        paddingHorizontal: 20,
+        borderBottomLeftRadius: 25,
+        borderBottomRightRadius: 25,
     },
-    backButton: {
-        padding: 10,
+    greetingText: {
+        fontSize: 22,
+        fontWeight: '300',
+        color: '#E1E1E6',
     },
-    backButtonText: {
-        fontSize: 24,
-        color: '#0a66c2',
+    userNameText: {
+        fontSize: 28,
         fontWeight: 'bold',
-    },
-    headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginLeft: 15,
-        color: '#333',
+        color: '#FFFFFF',
     },
     gridContainer: {
-        padding: 10,
+        paddingHorizontal: 10, // Ajustado para alinhar melhor
+        paddingTop: 20,
     },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 15,
+    serviceButtonContainer: { // Container para o botão individual
+        flex: 1,
+        maxWidth: '50%', // Garante que cada item ocupe no máximo 50%
+        padding: 8,
     },
     serviceButton: {
-        flex: 1,
-        margin: 5,
-        height: 150,
+        width: '100%', // Ocupa todo o espaço do container
+        aspectRatio: 1,
         backgroundColor: '#FFFFFF',
-        borderRadius: 10,
+        borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 10,
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
-            height: 2,
+            height: 4,
         },
         shadowOpacity: 0.1,
-        shadowRadius: 3.84,
-        elevation: 5,
+        shadowRadius: 10,
+        elevation: 8,
+    },
+    serviceButtonPressed: {
+        transform: [{ scale: 0.96 }],
+        shadowOpacity: 0.05,
+        elevation: 2,
     },
     serviceIcon: {
-        flex: 1,
-        width: '40%',
+        width: '45%',
+        height: '45%',
         resizeMode: 'contain',
+        marginBottom: 10,
     },
     serviceLabel: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#333',
+        fontSize: 15,
+        fontWeight: 'bold',
+        color: '#363F5F',
         textAlign: 'center',
+    },
+    logoutButton: {
+        marginHorizontal: 8,
+        marginTop: 10,
+        marginBottom: 20,
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: '#E74C3C',
+        paddingVertical: 15,
+        borderRadius: 20,
+        alignItems: 'center',
+    },
+    logoutButtonText: {
+        color: '#E74C3C',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
 
