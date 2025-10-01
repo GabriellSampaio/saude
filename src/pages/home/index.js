@@ -10,7 +10,6 @@ const icons = {
     defaultIcon: require('../../../assets/sangue.png'),
 };
 
-//setUserName(user.name.split(' ')[0]);
 
 const servicos = [
     { label: 'SANGUE', icon: require('../../../assets/sangue.png'), onPress: () => console.log('Sangue Pressionado') },
@@ -62,9 +61,9 @@ const Home = ({ navigation }) => {
 
     const getGreetingMessage = (name) => {
         const hour = new Date().getHours();
-        if (hour < 12) return `Bom dia, ${name}`;
-        if (hour < 18) return `Boa tarde, ${name}`;
-        return `Boa noite, ${name}`;
+        if (hour < 12) return `Bom dia, `;
+        if (hour < 18) return `Boa tarde, `;
+        return `Boa noite,`;
     };
 
     useEffect(() => {
