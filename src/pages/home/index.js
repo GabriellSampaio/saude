@@ -13,16 +13,16 @@ const icons = {
 //setUserName(user.name.split(' ')[0]);
 
 const servicos = [
-    { label: 'Sangue', icon: require('../../../assets/sangue.png'), onPress: () => console.log('Sangue Pressionado') },
-    { label: 'Água', icon: require('../../../assets/agua.png'), screen: 'Agua' },
-    { label: 'Remédios', icon: require('../../../assets/remedio.png'), screen: 'Remedios' },
-    { label: 'Alergias', icon: require('../../../assets/alergia.png'), screen: 'Alergias' },
-    { label: 'Sintomas', icon: require('../../../assets/sintomas.png'), onPress: () => console.log('Sintomas Pressionado') },
-    { label: 'Exames', icon: require('../../../assets/exame.png'), screen: 'Exames' },
-    { label: 'Vacinas', icon: require('../../../assets/vacina.png'), onPress: () => console.log('Vacinas Pressionado') },
-    { label: 'Frutas', icon: require('../../../assets/fruta.png'), onPress: () => console.log('Frutas Pressionado') },
-    { label: 'Pressão', icon: require('../../../assets/pressao.png'), onPress: () => console.log('Pressão Pressionado') },
-    { label: 'Glicemia', icon: require('../../../assets/glicemia.png'), onPress: () => console.log('Glicemia Pressionado') },
+    { label: 'SANGUE', icon: require('../../../assets/sangue.png'), onPress: () => console.log('Sangue Pressionado') },
+    { label: 'ÁGUA', icon: require('../../../assets/agua.png'), screen: 'Agua' },
+    { label: 'REMÉDIOS', icon: require('../../../assets/remedio.png'), screen: 'Remedios' },
+    { label: 'ALERGIAS', icon: require('../../../assets/alergia.png'), screen: 'Alergias' },
+    { label: 'SINTOMAS', icon: require('../../../assets/sintomas.png'), onPress: () => console.log('Sintomas Pressionado') },
+    { label: 'EXAMES', icon: require('../../../assets/exame.png'), screen: 'Exames' },
+    { label: 'VACINAS', icon: require('../../../assets/vacina.png'), onPress: () => console.log('Vacinas Pressionado') },
+    { label: 'FRUTAS', icon: require('../../../assets/fruta.png'), onPress: () => console.log('Frutas Pressionado') },
+    { label: 'PRESSÃO', icon: require('../../../assets/pressao.png'), onPress: () => console.log('Pressão Pressionado') },
+    { label: 'GLICEMIA', icon: require('../../../assets/glicemia.png'), onPress: () => console.log('Glicemia Pressionado') },
 ];
 
 const ServiceButton = ({ icon, label, onPress, index }) => (
