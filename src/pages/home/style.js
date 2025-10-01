@@ -59,6 +59,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 10,
         elevation: 8,
+        borderWidth: 3,
+        borderColor: '#699eeeff',
     },
     serviceButtonPressed: {
         transform: [{ scale: 0.96 }],
@@ -66,8 +68,8 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     serviceIcon: {
-        width: '45%',
-        height: '45%',
+        width: '85%',
+        height: '85%',
         resizeMode: 'contain',
         marginBottom: 10,
     },
