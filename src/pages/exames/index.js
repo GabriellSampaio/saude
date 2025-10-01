@@ -12,6 +12,7 @@ import {
     TextInput,
     ActivityIndicator
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect } from '@react-navigation/native';
 import api from '../../services/api'; 
 import styles from './style';
