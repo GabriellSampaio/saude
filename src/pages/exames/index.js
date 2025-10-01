@@ -12,11 +12,10 @@ import {
     TextInput,
     ActivityIndicator
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import api from '../../services/api'; 
 import styles from './style';
+import Header from '../../components/Header';
 
 const TIPOS_DE_EXAME = [
     { id: '1', nome: 'Hemograma Completo' }, { id: '2', nome: 'Raio-X (Tórax)' }, { id: '3', nome: 'Raio-X (Abdômen)' }, { id: '4', nome: 'Tomografia Computadorizada' }, { id: '5', nome: 'Ressonância Magnética' }, { id: '6', nome: 'Eletrocardiograma (ECG)' }, { id: '7', nome: 'Ultrassonografia' }, { id: '8', nome: 'Exame de Urina' }, { id: '9', nome: 'Exame de Fezes' }, { id: '10', nome: 'Glicemia em Jejum' },
@@ -197,7 +196,7 @@ export default function ExamesScreen({ navigation }) {
         </View>
     );
 
-    const renderExameItem = ({ item }) => { 
+    const renderExameItem = ({ item }) => {
         const imageUrl = `${api.defaults.baseURL.replace('/api', '')}/storage/${item.image_path}`;
         
         return (
@@ -224,6 +223,8 @@ export default function ExamesScreen({ navigation }) {
 
     return (
         <SafeAreaView style={styles.safeArea}>
+            <Header title="Meus Exames" navigation={navigation} />
+
             {loadingExames ? (
                 <ActivityIndicator size="large" color="#0d214f" style={{ flex: 1 }}/>
             ) : (

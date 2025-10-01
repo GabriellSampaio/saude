@@ -9,7 +9,8 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
     },
     uploadContainer: {
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingBottom: 20,
         backgroundColor: '#FFFFFF',
     },
     titulo: {
@@ -18,6 +19,7 @@ const styles = StyleSheet.create({
         color: '#0d214f',
         marginBottom: 8,
         textAlign: 'center',
+        marginTop: 20,
     },
     subtitulo: {
         fontSize: 16,
@@ -118,7 +120,8 @@ const styles = StyleSheet.create({
     separator: {
         borderBottomWidth: 1,
         borderBottomColor: '#dee2e6',
-        marginVertical: 20,
+        marginTop: 30,
+        marginBottom: 20,
     },
     separatorText: {
         fontSize: 20,

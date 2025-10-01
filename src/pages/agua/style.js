@@ -12,25 +12,10 @@ const styles = StyleSheet.create({
         right: 0,
         backgroundColor: '#3498db',
         opacity: 0.7,
+        zIndex: -1,
     },
     container: {
         flex: 1,
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-        paddingTop: 10,
-    },
-    backButton: {
-        fontSize: 30,
-        color: '#363F5F',
-        marginRight: 10,
-    },
-    headerTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#363F5F',
     },
     content: {
         flex: 1,
@@ -105,7 +90,6 @@ const styles = StyleSheet.create({
         color: '#0d214f',
         fontWeight: 'bold',
     },
-    // --- NOVO ESTILO PARA O BOTÃO DE RESET ---
     resetButton: {
         marginTop: 20,
         alignSelf: 'center',
