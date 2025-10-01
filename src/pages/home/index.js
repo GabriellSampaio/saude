@@ -10,6 +10,8 @@ const icons = {
     defaultIcon: require('../../../assets/sangue.png'),
 };
 
+//setUserName(user.name.split(' ')[0]);
+
 const servicos = [
     { label: 'Sangue', icon: require('../../../assets/sangue.png'), onPress: () => console.log('Sangue Pressionado') },
     { label: 'Água', icon: require('../../../assets/agua.png'), screen: 'Agua' },
@@ -18,9 +20,7 @@ const servicos = [
     { label: 'Sintomas', icon: require('../../../assets/sintomas.png'), onPress: () => console.log('Sintomas Pressionado') },
     { label: 'Exames', icon: require('../../../assets/exame.png'), screen: 'Exames' },
     { label: 'Vacinas', icon: require('../../../assets/vacina.png'), onPress: () => console.log('Vacinas Pressionado') },
-    { label: 'Meditação', icon: icons.defaultIcon, onPress: () => console.log('Meditação Pressionado') },
     { label: 'Frutas', icon: require('../../../assets/fruta.png'), onPress: () => console.log('Frutas Pressionado') },
-    { label: 'Emergência', icon: require('../../../assets/emergencia.png'), onPress: () => console.log('Emergência Pressionado') },
     { label: 'Pressão', icon: require('../../../assets/pressao.png'), onPress: () => console.log('Pressão Pressionado') },
     { label: 'Glicemia', icon: require('../../../assets/glicemia.png'), onPress: () => console.log('Glicemia Pressionado') },
 ];
@@ -60,23 +60,23 @@ const Home = ({ navigation }) => {
         }
     };
 
-    const getGreetingMessage = () => {
+    const getGreetingMessage = (name) => {
         const hour = new Date().getHours();
-        if (hour < 12) return 'Bom dia';
-        if (hour < 18) return 'Boa tarde';
-        return 'Boa noite';
+        if (hour < 12) return `Bom dia, ${name}`;
+        if (hour < 18) return `Boa tarde, ${name}`;
+        return `Boa noite, ${name}`;
     };
 
     useEffect(() => {
         loadUserData();
         setGreeting(getGreetingMessage());
     }, []);
-    
+
     const handleLogout = async () => {
         try {
             await AsyncStorage.removeItem('user_token');
             await AsyncStorage.removeItem('user_data');
-            navigation.replace('Login'); 
+            navigation.replace('Login');
         } catch (e) {
             Alert.alert("Erro", "Não foi possível fazer o logout.");
         }
@@ -183,21 +183,21 @@ const Home = ({ navigation }) => {
                 <View style={styles.modalContainer}>
                     <View style={styles.modalView}>
                         <Text style={styles.modalTitle}>Meu Perfil</Text>
-                        
-                        <ScrollView style={{width: '100%'}}>
-                            <View style={{alignItems: 'center'}}>
+
+                        <ScrollView style={{ width: '100%' }}>
+                            <View style={{ alignItems: 'center' }}>
                                 <Text style={styles.modalLabel}>Nome Completo</Text>
                                 <TextInput
                                     style={styles.modalInput}
                                     value={userData?.name}
-                                    onChangeText={(text) => setUserData({...userData, name: text})}
+                                    onChangeText={(text) => setUserData({ ...userData, name: text })}
                                 />
 
                                 <Text style={styles.modalLabel}>Email</Text>
                                 <TextInput
                                     style={styles.modalInput}
                                     value={userData?.email}
-                                    onChangeText={(text) => setUserData({...userData, email: text})}
+                                    onChangeText={(text) => setUserData({ ...userData, email: text })}
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                 />
