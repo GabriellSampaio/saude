@@ -10,10 +10,8 @@ const icons = {
     defaultIcon: require('../../../assets/sangue.png'),
 };
 
-//setUserName(user.name.split(' ')[0]);
-
 const servicos = [
-    { label: 'SANGUE', icon: require('../../../assets/sangue.png'), onPress: () => console.log('Sangue Pressionado') },
+    { label: 'SANGUE', icon: require('../../../assets/sangue.png'), screen: 'Sangue' },
     { label: 'ÁGUA', icon: require('../../../assets/agua.png'), screen: 'Agua' },
     { label: 'REMÉDIOS', icon: require('../../../assets/remedio.png'), screen: 'Remedios' },
     { label: 'ALERGIAS', icon: require('../../../assets/alergia.png'), screen: 'Alergias' },
@@ -56,21 +54,27 @@ const Home = ({ navigation }) => {
         if (userDataString) {
             const user = JSON.parse(userDataString);
             setUserData(user);
-            setUserName(user.name.split(' ')[0]);
         }
     };
 
     const getGreetingMessage = (name) => {
         const hour = new Date().getHours();
-        if (hour < 12) return `Bom dia, ${name}`;
-        if (hour < 18) return `Boa tarde, ${name}`;
-        return `Boa noite, ${name}`;
+        const firstName = name ?? "";
+
+        if (hour < 12) return `Bom dia, ${firstName}`;
+        if (hour < 18) return `Boa tarde, ${firstName}`;
+        return `Boa noite, ${firstName}`;
     };
 
     useEffect(() => {
         loadUserData();
-        setGreeting(getGreetingMessage());
     }, []);
+
+    useEffect(() => {
+        if (userName) {
+            setGreeting(getGreetingMessage(userName));
+        }
+    }, [userName]);
 
     const handleLogout = async () => {
         try {
@@ -141,8 +145,7 @@ const Home = ({ navigation }) => {
             >
                 <View style={styles.headerContent}>
                     <View>
-                        <Text style={styles.greetingText}>{greeting},</Text>
-                        <Text style={styles.userNameText}>{userName}</Text>
+                        <Text style={styles.greetingText}>{greeting}.</Text>
                     </View>
                     <TouchableOpacity onPress={() => setProfileModalVisible(true)} style={styles.menuButton}>
                         <View style={styles.menuBar} />

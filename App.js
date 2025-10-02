@@ -9,14 +9,15 @@ import Home from "./src/pages/home";
 import Exames from "./src/pages/exames";
 import Remedios from "./src/pages/remedios"; 
 import Alergias from "./src/pages/alergias"; 
-import Agua from "./src/pages/agua";       
+import Agua from "./src/pages/agua";  
+import Sangue from "./src/pages/sangue";       
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName="Cadastro" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={Splash} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Cadastro" component={Cadastro} />
@@ -25,6 +26,7 @@ export default function App() {
         <Stack.Screen name="Remedios" component={Remedios} />
         <Stack.Screen name="Alergias" component={Alergias} />
         <Stack.Screen name="Agua" component={Agua} />
+        <Stack.Screen name="Sangue" component={Sangue} />
       </Stack.Navigator>
     </NavigationContainer>
   );

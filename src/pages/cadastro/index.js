@@ -3,6 +3,9 @@ import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, Scro
 import axios from 'axios';
 import api from '../../services/api'; // <-- IMPORTANTE: Usando a configuração central
 import styles from './style';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+
 
 export default function Cadastro({ navigation }) {
     const [step, setStep] = useState(1);
@@ -120,7 +123,12 @@ export default function Cadastro({ navigation }) {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-            <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={{ backgroundColor: '#FFFFFF' }}>
+            <KeyboardAwareScrollView
+                contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', backgroundColor: '#FFFFFF' }}
+                enableOnAndroid={true}
+                extraScrollHeight={20}
+                keyboardShouldPersistTaps="handled"
+            >
                 <View style={styles.container}>
 
                     <TouchableOpacity style={styles.voltarContainer} onPress={() => step === 1 ? navigation.goBack() : setStep(1)}>
@@ -152,12 +160,12 @@ export default function Cadastro({ navigation }) {
                             </>
                         ) : (
                             <>
-                                <View style={styles.inputGroup}><Text style={styles.label}>CEP</Text><TextInput style={styles.input} placeholder="CEP" value={userData.cep} onChangeText={(text) => handleChange('cep', text)} keyboardType="numeric" onBlur={handleCepBlur} maxLength={9} />{loadingCep && <ActivityIndicator size="small" color="#fff" style={{ marginTop: 5 }} />}{cepError ? <Text style={styles.errorText}>{cepError}</Text> : null}</View>
-                                <View style={styles.inputGroup}><Text style={styles.label}>RUA</Text><TextInput style={styles.input} placeholder="Rua / Logradouro" value={userData.logradouro} onChangeText={(text) => handleChange('logradouro', text)} /></View>
-                                <View style={styles.inputGroup}><Text style={styles.label}>NÚMERO</Text><TextInput style={styles.input} placeholder="Número" value={userData.numero} onChangeText={(text) => handleChange('numero', text)} keyboardType="numeric" /></View>
-                                <View style={styles.inputGroup}><Text style={styles.label}>BAIRRO</Text><TextInput style={styles.input} placeholder="Bairro" value={userData.bairro} onChangeText={(text) => handleChange('bairro', text)} /></View>
-                                <View style={styles.inputGroup}><Text style={styles.label}>CIDADE</Text><TextInput style={styles.input} placeholder="Cidade" value={userData.cidade} onChangeText={(text) => handleChange('cidade', text)} /></View>
-                                <View style={styles.inputGroup}><Text style={styles.label}>UF</Text><TextInput style={styles.input} placeholder="UF" value={userData.uf} onChangeText={(text) => handleChange('uf', text)} maxLength={2} autoCapitalize="characters" /></View>
+                                <View style={styles.inputGroup}><Text style={styles.label}>CEP</Text><TextInput style={styles.input} placeholder="CEP" placeholderTextColor="#ffffffff" value={userData.cep} onChangeText={(text) => handleChange('cep', text)} keyboardType="numeric" onBlur={handleCepBlur} maxLength={9} />{loadingCep && <ActivityIndicator size="small" color="#fff" style={{ marginTop: 5 }} />}{cepError ? <Text style={styles.errorText}>{cepError}</Text> : null}</View>
+                                <View style={styles.inputGroup}><Text style={styles.label}>RUA</Text><TextInput style={styles.input} placeholder="Rua / Logradouro" placeholderTextColor="#ffffffff" value={userData.logradouro} onChangeText={(text) => handleChange('logradouro', text)} /></View>
+                                <View style={styles.inputGroup}><Text style={styles.label}>NÚMERO</Text><TextInput style={styles.input} placeholder="Número" placeholderTextColor="#ffffffff" value={userData.numero} onChangeText={(text) => handleChange('numero', text)} keyboardType="numeric" /></View>
+                                <View style={styles.inputGroup}><Text style={styles.label}>BAIRRO</Text><TextInput style={styles.input} placeholder="Bairro" placeholderTextColor="#ffffffff" value={userData.bairro} onChangeText={(text) => handleChange('bairro', text)} /></View>
+                                <View style={styles.inputGroup}><Text style={styles.label}>CIDADE</Text><TextInput style={styles.input} placeholder="Cidade" placeholderTextColor="#ffffffff" value={userData.cidade} onChangeText={(text) => handleChange('cidade', text)} /></View>
+                                <View style={styles.inputGroup}><Text style={styles.label}>UF</Text><TextInput style={styles.input} placeholder="UF" placeholderTextColor="#ffffffff" value={userData.uf} onChangeText={(text) => handleChange('uf', text)} maxLength={2} autoCapitalize="characters" /></View>
 
                                 <TouchableOpacity style={styles.botao} onPress={handleRegister} disabled={isRegistering}>
                                     {isRegistering ? (
@@ -177,7 +185,7 @@ export default function Cadastro({ navigation }) {
                         </View>
                     </View>
                 </View>
-            </ScrollView>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     );
 }

@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert, SafeAreaView, ScrollVie
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../services/api';
 import styles from './style';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function Login({ navigation }) {
     const [email, setEmail] = useState("");
@@ -11,7 +12,7 @@ export default function Login({ navigation }) {
     const [loginError, setLoginError] = useState("");
 
     const handleLogin = async () => {
-        setLoginError(""); 
+        setLoginError("");
 
         if (!email || !senha) {
             setLoginError("Por favor, preencha o email e a senha.");
@@ -34,10 +35,10 @@ export default function Login({ navigation }) {
             if (userToken) {
                 await AsyncStorage.setItem('user_token', userToken);
                 await AsyncStorage.setItem('user_data', JSON.stringify(user));
-                
+
                 // Log para confirmar que o token foi salvo
                 console.log('[LoginScreen] Token salvo com sucesso:', userToken);
-                
+
                 navigation.navigate("Home");
             } else {
                 setLoginError("A resposta da API não continha um token.");
@@ -54,7 +55,7 @@ export default function Login({ navigation }) {
             setIsLoading(false);
         }
     };
-    
+
     const handleInputChange = (setter, value) => {
         if (loginError) {
             setLoginError("");
@@ -64,9 +65,14 @@ export default function Login({ navigation }) {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-            <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} style={{ backgroundColor: '#FFFFFF' }}>
+            <KeyboardAwareScrollView
+                contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', backgroundColor: '#FFFFFF' }}
+                enableOnAndroid={true}
+                extraScrollHeight={20}
+                keyboardShouldPersistTaps="handled"
+            >
                 <View style={styles.container}>
-                    <View style={styles.imgContainer}> 
+                    <View style={styles.imgContainer}>
                         <View style={styles.imgCircle}>
                             <Image source={require('../../../assets/logo.png')} style={styles.logo} />
                         </View>
@@ -78,6 +84,7 @@ export default function Login({ navigation }) {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Seu email"
+                                placeholderTextColor={"#ffffffff"}
                                 value={email}
                                 onChangeText={(text) => handleInputChange(setEmail, text)}
                                 keyboardType="email-address"
@@ -89,6 +96,7 @@ export default function Login({ navigation }) {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Sua senha"
+                                placeholderTextColor={"#ffffffff"}
                                 value={senha}
                                 onChangeText={(text) => handleInputChange(setSenha, text)}
                                 secureTextEntry
@@ -96,7 +104,7 @@ export default function Login({ navigation }) {
                         </View>
 
                         {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null}
-                        
+
                         <TouchableOpacity style={styles.botao} onPress={handleLogin} disabled={isLoading}>
                             {isLoading ? (
                                 <ActivityIndicator color="#FFFFFF" />
@@ -113,7 +121,7 @@ export default function Login({ navigation }) {
                         </View>
                     </View>
                 </View>
-            </ScrollView>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     );
 }
