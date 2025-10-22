@@ -6,10 +6,6 @@ import * as Animatable from 'react-native-animatable';
 import api from '../../services/api';
 import styles from './style';
 
-const icons = {
-    defaultIcon: require('../../../assets/sangue.png'),
-};
-
 const servicos = [
     { label: 'SANGUE', icon: require('../../../assets/sangue.png'), screen: 'Sangue' },
     { label: 'ÁGUA', icon: require('../../../assets/agua.png'), screen: 'Agua' },
@@ -44,23 +40,28 @@ const ServiceButton = ({ icon, label, onPress, index }) => (
 );
 
 const Home = ({ navigation }) => {
-    const [userName, setUserName] = useState('');
+    const [userData, setUserData] = useState(null);
     const [greeting, setGreeting] = useState('');
     const [isProfileModalVisible, setProfileModalVisible] = useState(false);
-    const [userData, setUserData] = useState(null);
 
     const loadUserData = async () => {
-        const userDataString = await AsyncStorage.getItem('user_data');
-        if (userDataString) {
-            const user = JSON.parse(userDataString);
-            setUserData(user);
+        try {
+            const userDataString = await AsyncStorage.getItem('user_data');
+            if (userDataString) {
+                const user = JSON.parse(userDataString);
+                console.log("Usuário carregado:", user);
+                setUserData(user);
+                const greetingMsg = getGreetingMessage(user.name);
+                setGreeting(greetingMsg);
+            }
+        } catch (error) {
+            console.error("Erro ao carregar usuário:", error);
         }
     };
 
-    const getGreetingMessage = (name) => {
+    const getGreetingMessage = (name = '') => {
         const hour = new Date().getHours();
-        const firstName = name ?? "";
-
+        const firstName = name.split(' ')[0]; 
         if (hour < 12) return `Bom dia, ${firstName}`;
         if (hour < 18) return `Boa tarde, ${firstName}`;
         return `Boa noite, ${firstName}`;
@@ -69,12 +70,6 @@ const Home = ({ navigation }) => {
     useEffect(() => {
         loadUserData();
     }, []);
-
-    useEffect(() => {
-        if (userName) {
-            setGreeting(getGreetingMessage(userName));
-        }
-    }, [userName]);
 
     const handleLogout = async () => {
         try {
@@ -95,21 +90,25 @@ const Home = ({ navigation }) => {
     };
 
     const handleUpdateProfile = async () => {
-        if (!userData.name || !userData.email) {
+        if (!userData?.name || !userData?.email) {
             Alert.alert("Erro", "Nome e email não podem ser vazios.");
             return;
         }
+
         try {
-            const response = await api.put('/user/profile', {
+            const response = await api.put(`/users/${userData.id}`, {
                 name: userData.name,
                 email: userData.email,
             });
+
+            console.log("Perfil atualizado:", response.data);
+
             await AsyncStorage.setItem('user_data', JSON.stringify(response.data));
             loadUserData();
             setProfileModalVisible(false);
             Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
         } catch (error) {
-            console.error(error.response.data);
+            console.error("Erro ao atualizar perfil:", error.response?.data || error);
             Alert.alert("Erro", "Não foi possível atualizar o perfil.");
         }
     };
@@ -125,10 +124,11 @@ const Home = ({ navigation }) => {
                     style: "destructive",
                     onPress: async () => {
                         try {
-                            await api.delete('/user/profile');
+                            await api.delete(`/users/${userData.id}`);
                             await AsyncStorage.clear();
                             navigation.replace('Login');
                         } catch (error) {
+                            console.error("Erro ao excluir conta:", error);
                             Alert.alert("Erro", "Não foi possível desativar a conta.");
                         }
                     }
@@ -139,13 +139,10 @@ const Home = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <LinearGradient
-                colors={['#0d214f', '#2a5a8a']}
-                style={styles.header}
-            >
+            <LinearGradient colors={['#0d214f', '#2a5a8a']} style={styles.header}>
                 <View style={styles.headerContent}>
                     <View>
-                        <Text style={styles.greetingText}>{greeting}.</Text>
+                        <Text style={styles.greetingText}>{greeting || "Olá"}</Text>
                     </View>
                     <TouchableOpacity onPress={() => setProfileModalVisible(true)} style={styles.menuButton}>
                         <View style={styles.menuBar} />
@@ -192,14 +189,14 @@ const Home = ({ navigation }) => {
                                 <Text style={styles.modalLabel}>Nome Completo</Text>
                                 <TextInput
                                     style={styles.modalInput}
-                                    value={userData?.name}
+                                    value={userData?.name ?? ""}
                                     onChangeText={(text) => setUserData({ ...userData, name: text })}
                                 />
 
                                 <Text style={styles.modalLabel}>Email</Text>
                                 <TextInput
                                     style={styles.modalInput}
-                                    value={userData?.email}
+                                    value={userData?.email ?? ""}
                                     onChangeText={(text) => setUserData({ ...userData, email: text })}
                                     keyboardType="email-address"
                                     autoCapitalize="none"
@@ -223,6 +220,6 @@ const Home = ({ navigation }) => {
             </Modal>
         </SafeAreaView>
     );
-}
+};
 
 export default Home;
