@@ -43,6 +43,7 @@ const Home = ({ navigation }) => {
     const [userData, setUserData] = useState(null);
     const [greeting, setGreeting] = useState('');
     const [isProfileModalVisible, setProfileModalVisible] = useState(false);
+    const [isEditMode, setEditMode] = useState(false);
 
     const loadUserData = async () => {
         try {
@@ -61,7 +62,7 @@ const Home = ({ navigation }) => {
 
     const getGreetingMessage = (name = '') => {
         const hour = new Date().getHours();
-        const firstName = name.split(' ')[0]; 
+        const firstName = name.split(' ')[0];
         if (hour < 12) return `Bom dia, ${firstName}`;
         if (hour < 18) return `Boa tarde, ${firstName}`;
         return `Boa noite, ${firstName}`;
@@ -105,7 +106,7 @@ const Home = ({ navigation }) => {
 
             await AsyncStorage.setItem('user_data', JSON.stringify(response.data));
             loadUserData();
-            setProfileModalVisible(false);
+            setEditMode(false);
             Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
         } catch (error) {
             console.error("Erro ao atualizar perfil:", error.response?.data || error);
@@ -137,6 +138,13 @@ const Home = ({ navigation }) => {
         );
     };
 
+    const getInitials = (name) => {
+        if (!name) return '?';
+        const names = name.trim().split(' ');
+        if (names.length === 1) return names[0].charAt(0).toUpperCase();
+        return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <LinearGradient colors={['#0d214f', '#2a5a8a']} style={styles.header}>
@@ -165,61 +173,131 @@ const Home = ({ navigation }) => {
                 keyExtractor={(item, index) => index.toString()}
                 numColumns={2}
                 contentContainerStyle={styles.gridContainer}
-                ListFooterComponent={
-                    <Animatable.View animation="fadeInUp" duration={800} delay={500}>
-                        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                            <Text style={styles.logoutButtonText}>Deslogar</Text>
-                        </TouchableOpacity>
-                    </Animatable.View>
-                }
             />
 
             <Modal
-                animationType="slide"
+                animationType="none"
                 transparent={true}
                 visible={isProfileModalVisible}
-                onRequestClose={() => setProfileModalVisible(false)}
+                onRequestClose={() => {
+                    setProfileModalVisible(false);
+                    setEditMode(false);
+                }}
             >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalView}>
-                        <Text style={styles.modalTitle}>Meu Perfil</Text>
+                <TouchableOpacity
+                    style={styles.modalOverlay}
+                    activeOpacity={1}
+                    onPress={() => {
+                        setProfileModalVisible(false);
+                        setEditMode(false);
+                    }}
+                >
+                    <Animatable.View
+                        animation="slideInRight"
+                        duration={500}
+                        style={styles.drawerContainer}
+                    >
+                        <LinearGradient
+                            colors={['#0d214f', '#2a5a8a']} 
+                            style={styles.drawerGradient}
+                        >
+                            <View style={styles.drawerHeader}>
+                                <TouchableOpacity
+                                    style={styles.closeButton}
+                                    onPress={() => {
+                                        setProfileModalVisible(false);
+                                        setEditMode(false);
+                                    }}
+                                >
+                                    <Text style={styles.closeButtonText}>✕</Text>
+                                </TouchableOpacity>
 
-                        <ScrollView style={{ width: '100%' }}>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text style={styles.modalLabel}>Nome Completo</Text>
-                                <TextInput
-                                    style={styles.modalInput}
-                                    value={userData?.name ?? ""}
-                                    onChangeText={(text) => setUserData({ ...userData, name: text })}
-                                />
-
-                                <Text style={styles.modalLabel}>Email</Text>
-                                <TextInput
-                                    style={styles.modalInput}
-                                    value={userData?.email ?? ""}
-                                    onChangeText={(text) => setUserData({ ...userData, email: text })}
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                />
+                                <View style={styles.profileSection}>
+                                    <View style={styles.avatarContainer}>
+                                        <Text style={styles.avatarText}>
+                                            {getInitials(userData?.name)}
+                                        </Text>
+                                    </View>
+                                    <Text style={styles.profileName}>{userData?.name || 'Usuário'}</Text>
+                                    <Text style={styles.profileLocation}>{userData?.email || ''}</Text>
+                                </View>
                             </View>
-                        </ScrollView>
+                            {!isEditMode ? (
+                                <View style={styles.menuSection}>
+                                    <TouchableOpacity
+                                        style={styles.menuItem}
+                                        onPress={() => {
+                                            console.log('Abrindo modo de edição');
+                                            setEditMode(true);
+                                        }}
+                                    >
+                                        <Text style={styles.menuIcon}>👤</Text>
+                                        <Text style={styles.menuText}>MEU PERFIL</Text>
+                                    </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.modalButtonSave} onPress={handleUpdateProfile}>
-                            <Text style={styles.modalButtonText}>Salvar Alterações</Text>
-                        </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={styles.menuItem}
+                                        onPress={handleLogout}
+                                    >
+                                        <Text style={styles.menuIcon}>🚪</Text>
+                                        <Text style={styles.menuText}>SAIR</Text>
+                                    </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.modalButtonClose} onPress={() => setProfileModalVisible(false)}>
-                            <Text style={styles.modalButtonCloseText}>Fechar</Text>
-                        </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.menuItem, styles.menuItemDanger]}
+                                        onPress={handleDeleteProfile}
+                                    >
+                                        <Text style={styles.menuIcon}>⚠️</Text>
+                                        <Text style={[styles.menuText, styles.menuTextDanger]}>DESATIVAR CONTA</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            ) : (
+                                <ScrollView style={styles.editSection} showsVerticalScrollIndicator={false}>
+                                    <Text style={styles.editTitle}>Editar Perfil</Text>
 
-                        <TouchableOpacity style={styles.deleteAccountButton} onPress={handleDeleteProfile}>
-                            <Text style={styles.deleteAccountButtonText}>Desativar minha conta</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                                    <Text style={styles.inputLabel}>Nome Completo</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        value={userData?.name ?? ""}
+                                        onChangeText={(text) => setUserData({ ...userData, name: text })}
+                                        placeholder="Digite seu nome"
+                                        placeholderTextColor="#7a8599"
+                                    />
+
+                                    <Text style={styles.inputLabel}>Email</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        value={userData?.email ?? ""}
+                                        onChangeText={(text) => setUserData({ ...userData, email: text })}
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
+                                        placeholder="Digite seu email"
+                                        placeholderTextColor="#7a8599"
+                                    />
+
+                                    <TouchableOpacity
+                                        style={styles.saveButton}
+                                        onPress={handleUpdateProfile}
+                                    >
+                                        <Text style={styles.saveButtonText}>Salvar Alterações</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={styles.cancelButton}
+                                        onPress={() => {
+                                            setEditMode(false);
+                                            loadUserData();
+                                        }}
+                                    >
+                                        <Text style={styles.cancelButtonText}>Cancelar</Text>
+                                    </TouchableOpacity>
+                                </ScrollView>
+                            )}
+                        </LinearGradient>
+                    </Animatable.View>
+                </TouchableOpacity>
             </Modal>
-        </SafeAreaView>
+        </SafeAreaView >
     );
 };
-
 export default Home;

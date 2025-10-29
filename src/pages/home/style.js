@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {
@@ -6,7 +8,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F0F2F5',
     },
     header: {
-        paddingTop: 50,
+        paddingTop: 20,
         paddingBottom: 20,
         paddingHorizontal: 20,
         borderBottomLeftRadius: 25,
@@ -22,11 +24,6 @@ const styles = StyleSheet.create({
         fontWeight: '300',
         color: '#E1E1E6',
     },
-    userNameText: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-    },
     menuButton: {
         padding: 10,
     },
@@ -41,13 +38,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingTop: 20,
     },
-    serviceButtonContainer: { 
+    serviceButtonContainer: {
         flex: 1,
-        maxWidth: '50%', 
+        maxWidth: '50%',
         padding: 8,
     },
     serviceButton: {
-        width: '100%', 
+        width: '100%',
         aspectRatio: 1,
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
@@ -76,7 +73,7 @@ const styles = StyleSheet.create({
     serviceLabel: {
         fontSize: 15,
         fontWeight: 'bold',
-        color: '#363F5F',
+        color: 'hsla(227, 28%, 29%, 1.00)',
         textAlign: 'center',
     },
     logoutButton: {
@@ -95,76 +92,156 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    modalContainer: {
+    modalOverlay: {
         flex: 1,
-        justifyContent: 'flex-end',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'flex-start',
     },
-    modalView: {
-        backgroundColor: 'white',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        padding: 25,
-        paddingBottom: 40,
-        alignItems: 'center',
-        maxHeight: '80%',
+    drawerContainer: {
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        bottom: 0,
+        width: width * 0.75,
+        maxWidth: 320,
+        shadowColor: "#000",
+        shadowOffset: { width: -2, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        elevation: 10,
     },
-    modalTitle: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 20,
+    drawerGradient: {
+    flex: 1,
+},
+    drawerHeader: {
+        paddingTop: 50,
+        paddingBottom: 30,
+        paddingHorizontal: 20,
     },
-    modalLabel: {
-        width: '80%',
-        alignSelf: 'center',
-        color: '#555',
-        marginBottom: 5,
-        fontSize: 14,
-    },
-    modalInput: {
-        width: '80%',
-        borderWidth: 1,
-        borderColor: '#ddd',
-        padding: 12,
-        fontSize: 16,
-        borderRadius: 10,
-        marginBottom: 15,
-    },
-    modalButtonSave: {
-        width: '80%',
-        backgroundColor: '#0d214f',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-        marginBottom: 10,
-        marginTop: 10,
-    },
-    modalButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    modalButtonClose: {
-        width: '80%',
-        backgroundColor: '#aaa',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-    },
-    modalButtonCloseText: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    deleteAccountButton: {
-        marginTop: 30,
+    closeButton: {
+        position: 'absolute',
+        top: 15,
+        right: 15,
+        zIndex: 10,
         padding: 10,
     },
-    deleteAccountButtonText: {
-        color: '#e74c3c',
+    closeButtonText: {
+        marginTop: 20,
+        color: '#FFFFFF',
+        fontSize: 24,
+        fontWeight: '300',
+    },
+    profileSection: {
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    avatarContainer: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: '#E07856',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 15,
+        borderWidth: 3,
+        borderColor: '#FFFFFF',
+    },
+    avatarText: {
+        fontSize: 36,
+        fontWeight: 'bold',
+        color: '#FFFFFF',
+    },
+    profileName: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#FFFFFF',
+        marginBottom: 5,
+    },
+    profileLocation: {
         fontSize: 14,
-        textDecorationLine: 'underline',
-    }
+        color: '#B0B8C4',
+    },
+    menuSection: {
+        paddingTop: 20,
+    },
+    menuItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 18,
+        paddingHorizontal: 25,
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    },
+    menuItemDanger: {
+        marginTop: 10,
+    },
+    menuIcon: {
+        fontSize: 18,
+        marginRight: 15,
+        width: 25,
+    },
+    menuText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#FFFFFF',
+        letterSpacing: 0.5,
+    },
+    menuTextDanger: {
+        color: '#FF6B6B',
+    },
+    editSection: {
+        flex: 1,
+        paddingHorizontal: 25,
+        paddingTop: 20,
+    },
+    editTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#FFFFFF',
+        marginBottom: 25,
+    },
+    inputLabel: {
+        fontSize: 13,
+        color: '#B0B8C4',
+        marginBottom: 8,
+        marginTop: 5,
+        fontWeight: '500',
+    },
+    input: {
+        backgroundColor: '#2e3847',
+        borderWidth: 1,
+        borderColor: '#4a5568',
+        padding: 14,
+        fontSize: 16,
+        borderRadius: 10,
+        marginBottom: 20,
+        color: '#FFFFFF',
+    },
+    saveButton: {
+        backgroundColor: '#4CAF50',
+        padding: 16,
+        borderRadius: 10,
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    saveButtonText: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    cancelButton: {
+        backgroundColor: 'transparent',
+        padding: 16,
+        borderRadius: 10,
+        alignItems: 'center',
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: '#B0B8C4',
+    },
+    cancelButtonText: {
+        color: '#B0B8C4',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
 });
-
 export default styles;
