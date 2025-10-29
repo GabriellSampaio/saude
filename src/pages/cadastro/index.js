@@ -180,7 +180,7 @@ export default function Cadastro({ navigation }) {
                         <View style={styles.loginContainer}>
                             <Text style={styles.possuiContaText}>ja possui conta?</Text>
                             <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                                <Text style={styles.loginLink}>login</Text>
+                                <Text style={styles.loginLink}>loogin</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
