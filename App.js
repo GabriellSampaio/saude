@@ -10,7 +10,10 @@ import Exames from "./src/pages/exames";
 import Remedios from "./src/pages/remedios"; 
 import Alergias from "./src/pages/alergias"; 
 import Agua from "./src/pages/agua";  
-import Sangue from "./src/pages/sangue";       
+import Sangue from "./src/pages/sangue";
+import Glicemia from "./src/pages/glicemia";         
+import Vacinas from "./src/pages/vacinas";
+import Sintomas from "./src/pages/sintomas";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +30,9 @@ export default function App() {
         <Stack.Screen name="Alergias" component={Alergias} />
         <Stack.Screen name="Agua" component={Agua} />
         <Stack.Screen name="Sangue" component={Sangue} />
+        <Stack.Screen name="Glicemia" component={Glicemia} />
+        <Stack.Screen name="Vacinas" component={Vacinas} />
+        <Stack.Screen name="Sintomas" component={Sintomas} />
       </Stack.Navigator>
     </NavigationContainer>
   );
