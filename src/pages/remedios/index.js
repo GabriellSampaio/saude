@@ -17,14 +17,14 @@ const REMEDIOS_DISPONIVEIS = [
     { 
         id: 2, 
         nome: 'Dipirona', 
-        icon: '💉',
+        icon: '💊',
         descricao: 'Analgésico e antitérmico',
         cor: '#4ECDC4'
     },
     { 
         id: 3, 
         nome: 'Ibuprofeno', 
-        icon: '🏥',
+        icon: '💊',
         descricao: 'Anti-inflamatório',
         cor: '#95E1D3'
     },

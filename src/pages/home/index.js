@@ -11,12 +11,10 @@ const servicos = [
     { label: 'ÁGUA', icon: require('../../../assets/agua.png'), screen: 'Agua' },
     { label: 'REMÉDIOS', icon: require('../../../assets/remedio.png'), screen: 'Remedios' },
     { label: 'ALERGIAS', icon: require('../../../assets/alergia.png'), screen: 'Alergias' },
-    { label: 'SINTOMAS', icon: require('../../../assets/sintomas.png'), onPress: () => console.log('Sintomas Pressionado') },
+    { label: 'SINTOMAS', icon: require('../../../assets/sintomas.png'), screen: 'Sintomas' },
     { label: 'EXAMES', icon: require('../../../assets/exame.png'), screen: 'Exames' },
-    { label: 'VACINAS', icon: require('../../../assets/vacina.png'), onPress: () => console.log('Vacinas Pressionado') },
-    { label: 'FRUTAS', icon: require('../../../assets/fruta.png'), onPress: () => console.log('Frutas Pressionado') },
-    { label: 'PRESSÃO', icon: require('../../../assets/pressao.png'), onPress: () => console.log('Pressão Pressionado') },
-    { label: 'GLICEMIA', icon: require('../../../assets/glicemia.png'), onPress: () => console.log('Glicemia Pressionado') },
+    { label: 'VACINAS', icon: require('../../../assets/vacina.png'), screen: 'Vacinas' },
+    { label: 'GLICEMIA', icon: require('../../../assets/glicemia.png'), screen: 'Glicemia' },
 ];
 
 const ServiceButton = ({ icon, label, onPress, index }) => (
@@ -50,7 +48,6 @@ const Home = ({ navigation }) => {
             const userDataString = await AsyncStorage.getItem('user_data');
             if (userDataString) {
                 const user = JSON.parse(userDataString);
-                console.log("Usuário carregado:", user);
                 setUserData(user);
                 const greetingMsg = getGreetingMessage(user.name);
                 setGreeting(greetingMsg);
@@ -97,12 +94,10 @@ const Home = ({ navigation }) => {
         }
 
         try {
-            const response = await api.put(`/users/${userData.id}`, {
+            const response = await api.put(`/user/profile`, {
                 name: userData.name,
                 email: userData.email,
             });
-
-            console.log("Perfil atualizado:", response.data);
 
             await AsyncStorage.setItem('user_data', JSON.stringify(response.data));
             loadUserData();
@@ -125,7 +120,7 @@ const Home = ({ navigation }) => {
                     style: "destructive",
                     onPress: async () => {
                         try {
-                            await api.delete(`/users/${userData.id}`);
+                            await api.delete(`/user/profile`);
                             await AsyncStorage.clear();
                             navigation.replace('Login');
                         } catch (error) {
@@ -194,7 +189,7 @@ const Home = ({ navigation }) => {
                 >
                     <Animatable.View
                         animation="slideInRight"
-                        duration={500}
+                        duration={300}
                         style={styles.drawerContainer}
                     >
                         <LinearGradient
@@ -227,7 +222,6 @@ const Home = ({ navigation }) => {
                                     <TouchableOpacity
                                         style={styles.menuItem}
                                         onPress={() => {
-                                            console.log('Abrindo modo de edição');
                                             setEditMode(true);
                                         }}
                                     >
