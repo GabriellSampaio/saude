@@ -1,10 +1,29 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Alert, ScrollView, Animated, Keyboard, ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Alert, ScrollView, Animated, Keyboard, ActivityIndicator, FlatList, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import * as Notifications from 'expo-notifications'; // Importação necessária
 import api from '../../services/api';
 import Header from '../../components/Header';
 import styles from './style';
+
+// Configuração para exibir notificação com o app aberto
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+    }),
+});
+
+// Opções de tempo para o lembrete
+const REMINDER_OPTIONS = [
+    { label: '⏱️ 1 segundos (Teste)', seconds: 1 },
+    { label: '15 minutos', seconds: 15 * 60 },
+    { label: '30 minutos', seconds: 30 * 60 },
+    { label: '1 hora', seconds: 60 * 60 },
+    { label: '2 horas', seconds: 120 * 60 },
+];
 
 const AguaScreen = ({ navigation }) => {
     const [peso, setPeso] = useState('');
@@ -18,9 +37,23 @@ const AguaScreen = ({ navigation }) => {
     const [editedConsumo, setEditedConsumo] = useState('0');
     const [historicalData, setHistoricalData] = useState([]);
 
+    // Estado para controlar o Modal de Lembrete
+    const [reminderModalVisible, setReminderModalVisible] = useState(false);
+
     const waterLevel = useRef(new Animated.Value(0)).current;
     const waveAnim = useRef(new Animated.Value(0)).current;
     const scaleAnim = useRef(new Animated.Value(1)).current;
+
+    // Pede permissão para notificações ao abrir a tela
+    useEffect(() => {
+        const getPermissions = async () => {
+            const { status } = await Notifications.getPermissionsAsync();
+            if (status !== 'granted') {
+                await Notifications.requestPermissionsAsync();
+            }
+        };
+        getPermissions();
+    }, []);
 
     const loadInitialData = async () => {
         setLoadingData(true);
@@ -55,20 +88,18 @@ const AguaScreen = ({ navigation }) => {
     useEffect(() => {
         const progress = metaDiaria > 0 ? aguaConsumida / metaDiaria : 0;
         
-        // Animação da altura da água (sem native driver)
         Animated.timing(waterLevel, {
             toValue: progress > 1 ? 1 : progress,
             duration: 1000,
-            useNativeDriver: false, // IMPORTANTE: false para height
+            useNativeDriver: false, 
         }).start();
 
-        // Animação de onda contínua (com native driver)
         Animated.loop(
             Animated.sequence([
                 Animated.timing(waveAnim, {
                     toValue: 1,
                     duration: 2000,
-                    useNativeDriver: true, // OK para transform
+                    useNativeDriver: true,
                 }),
                 Animated.timing(waveAnim, {
                     toValue: 0,
@@ -146,7 +177,6 @@ const AguaScreen = ({ navigation }) => {
         setAguaConsumida(novoConsumo); 
         updateConsumoNaAPI(novoConsumo); 
 
-        // Animação de pulso ao adicionar água
         Animated.sequence([
             Animated.timing(scaleAnim, {
                 toValue: 1.1,
@@ -183,6 +213,24 @@ const AguaScreen = ({ navigation }) => {
                 }
             ]
         );
+    };
+
+    // Função que agenda a notificação com base no tempo escolhido
+    const handleScheduleReminder = async (seconds) => {
+        setReminderModalVisible(false);
+        try {
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: "💧 Hora de beber água!",
+                    body: "Mantenha-se hidratado para atingir sua meta diária.",
+                    sound: true,
+                },
+                trigger: { seconds: seconds },
+            });
+            Alert.alert("Lembrete Agendado", "Você será notificado em breve!");
+        } catch (error) {
+            Alert.alert("Erro", "Não foi possível agendar a notificação.");
+        }
     };
 
     const toggleEditConsumo = () => {
@@ -298,14 +346,12 @@ const AguaScreen = ({ navigation }) => {
                             <View style={styles.bottleCapTop} />
                             <View style={styles.bottleCapNeck} />
                             <View style={styles.bottle}>
-                                {/* Água com altura animada */}
                                 <Animated.View 
                                     style={[
                                         styles.waterFill, 
                                         { height: animatedHeight }
                                     ]} 
                                 >
-                                    {/* Onda com transform animado */}
                                     <Animated.View
                                         style={[
                                             styles.waveEffect,
@@ -319,7 +365,6 @@ const AguaScreen = ({ navigation }) => {
                             </View>
                         </Animated.View>
 
-                        {/* Informações de Consumo */}
                         <View style={styles.consumptionInfo}>
                             {isEditingConsumo ? (
                                 <View style={styles.editContainer}>
@@ -362,7 +407,7 @@ const AguaScreen = ({ navigation }) => {
                         <Text style={styles.actionTitle}>💧 Adicionar água</Text>
                         <View style={styles.actionsContainer}>
                             <TouchableOpacity style={styles.actionButton} onPress={() => adicionarAgua(350)}>
-                                <Text style={styles.actionEmoji}>🥤</Text>
+                                <Text style={styles.actionEmoji}>🍶</Text>
                                 <Text style={styles.actionButtonText}>Copo</Text>
                                 <Text style={styles.actionButtonValue}>350ml</Text>
                             </TouchableOpacity>
@@ -372,15 +417,22 @@ const AguaScreen = ({ navigation }) => {
                                 <Text style={styles.actionButtonValue}>500ml</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.actionButton} onPress={() => adicionarAgua(1000)}>
-                                <Text style={styles.actionEmoji}>🧴</Text>
+                                <Text style={styles.actionEmoji}>🍶</Text>
                                 <Text style={styles.actionButtonText}>Garrafa</Text>
                                 <Text style={styles.actionButtonValue}>1L</Text>
                             </TouchableOpacity>
                         </View>
                         
-                        <TouchableOpacity style={styles.resetButton} onPress={handleResetContagem}>
-                            <Text style={styles.resetButtonText}>🔄 Zerar contagem</Text>
-                        </TouchableOpacity>
+                        {/* Container dos Botões Extras: Notificação e Zerar */}
+                        <View style={styles.extraButtonsContainer}>
+                            <TouchableOpacity style={styles.notificationButton} onPress={() => setReminderModalVisible(true)}>
+                                <Text style={styles.notificationButtonText}>🔔 Lembrete</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.resetButton} onPress={handleResetContagem}>
+                                <Text style={styles.resetButtonText}>🔄 Zerar</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
                     {/* Histórico */}
@@ -401,6 +453,36 @@ const AguaScreen = ({ navigation }) => {
                     </View>
                 </View>
             </ScrollView>
+
+            {/* Modal de Seleção de Tempo para Notificação */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={reminderModalVisible}
+                onRequestClose={() => setReminderModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Agendar Lembrete</Text>
+                        <Text style={styles.modalSubtitle}>Daqui a quanto tempo você quer ser lembrado de beber água?</Text>
+                        
+                        {REMINDER_OPTIONS.map((option, index) => (
+                            <TouchableOpacity 
+                                key={index} 
+                                style={styles.timeOption} 
+                                onPress={() => handleScheduleReminder(option.seconds)}
+                            >
+                                <Text style={styles.timeOptionText}>{option.label}</Text>
+                            </TouchableOpacity>
+                        ))}
+
+                        <TouchableOpacity style={styles.closeButton} onPress={() => setReminderModalVisible(false)}>
+                            <Text style={styles.closeButtonText}>Cancelar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
         </SafeAreaView>
     );
 };
