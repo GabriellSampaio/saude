@@ -3,6 +3,7 @@ import { View, Text, SafeAreaView, Pressable, Image, FlatList, Alert, TouchableO
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Animatable from 'react-native-animatable';
+import api from '../../services/api';
 import styles from './style';
 
 const servicos = [
@@ -63,7 +64,7 @@ const Home = ({ navigation }) => {
         return `Boa noite, ${firstName}`;
     };
 
-    // Recarrega os dados toda vez que a tela recebe foco (útil se o perfil foi editado)
+    // Recarrega os dados sempre que a tela ganhar foco (para atualizar avatar/nome se mudar no perfil)
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             loadUserData();
@@ -89,35 +90,6 @@ const Home = ({ navigation }) => {
         }
     };
 
-    // Função para deletar conta (mantida aqui para acesso rápido, ou pode ir para a tela Perfil)
-    const handleDeleteProfile = () => {
-        Alert.alert(
-            "Desativar Conta",
-            "Você tem certeza? Esta ação fará o logout e inativará sua conta.",
-            [
-                { text: "Cancelar", style: "cancel" },
-                {
-                    text: "Sim, desativar",
-                    style: "destructive",
-                    onPress: async () => {
-                        try {
-                            // Importante: importar 'api' se for usar aqui
-                            // await api.delete(`/user/profile`);
-                            // await AsyncStorage.clear();
-                            // navigation.replace('Login');
-                            
-                            // Por enquanto, vamos redirecionar para a tela de perfil para fazer isso lá
-                            setProfileModalVisible(false);
-                            navigation.navigate('Perfil');
-                        } catch (error) {
-                            Alert.alert("Erro", "Ação movida para a tela de Perfil.");
-                        }
-                    }
-                }
-            ]
-        );
-    };
-
     const getInitials = (name) => {
         if (!name) return '?';
         const names = name.trim().split(' ');
@@ -132,10 +104,21 @@ const Home = ({ navigation }) => {
                     <View>
                         <Text style={styles.greetingText}>{greeting || "Olá"}</Text>
                     </View>
-                    <TouchableOpacity onPress={() => setProfileModalVisible(true)} style={styles.menuButton}>
-                        <View style={styles.menuBar} />
-                        <View style={styles.menuBar} />
-                        <View style={styles.menuBar} />
+                    
+                    {/* Botão Avatar/Menu */}
+                    <TouchableOpacity onPress={() => setProfileModalVisible(true)} style={styles.profileButton}>
+                        {userData?.avatar ? (
+                            <Image 
+                                source={{ uri: `${api.defaults.baseURL.replace('/api', '')}/storage/${userData.avatar}` }} 
+                                style={styles.headerAvatar} 
+                            />
+                        ) : (
+                            <View style={styles.headerAvatarPlaceholder}>
+                                <Text style={styles.headerAvatarText}>
+                                    {getInitials(userData?.name)}
+                                </Text>
+                            </View>
+                        )}
                     </TouchableOpacity>
                 </View>
             </LinearGradient>
@@ -155,6 +138,7 @@ const Home = ({ navigation }) => {
                 contentContainerStyle={styles.gridContainer}
             />
 
+            {/* Modal Lateral (Drawer) */}
             <Modal
                 animationType="none"
                 transparent={true}
@@ -185,9 +169,16 @@ const Home = ({ navigation }) => {
 
                                 <View style={styles.profileSection}>
                                     <View style={styles.avatarContainer}>
-                                        <Text style={styles.avatarText}>
-                                            {getInitials(userData?.name)}
-                                        </Text>
+                                        {userData?.avatar ? (
+                                            <Image 
+                                                source={{ uri: `${api.defaults.baseURL.replace('/api', '')}/storage/${userData.avatar}` }} 
+                                                style={styles.drawerAvatar} 
+                                            />
+                                        ) : (
+                                            <Text style={styles.avatarText}>
+                                                {getInitials(userData?.name)}
+                                            </Text>
+                                        )}
                                     </View>
                                     <Text style={styles.profileName}>{userData?.name || 'Usuário'}</Text>
                                     <Text style={styles.profileLocation}>{userData?.email || ''}</Text>
@@ -199,7 +190,7 @@ const Home = ({ navigation }) => {
                                     style={styles.menuItem}
                                     onPress={() => {
                                         setProfileModalVisible(false);
-                                        navigation.navigate('Perfil'); // Navega para a nova tela de Perfil
+                                        navigation.navigate('Perfil'); // <-- Navega para a tela Perfil
                                     }}
                                 >
                                     <Text style={styles.menuIcon}>👤</Text>
