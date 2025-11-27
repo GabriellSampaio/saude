@@ -14,6 +14,7 @@ import Sangue from "./src/pages/sangue";
 import Glicemia from "./src/pages/glicemia";         
 import Vacinas from "./src/pages/vacinas";
 import Sintomas from "./src/pages/sintomas";
+import Perfil from "./src/pages/perfil";
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,7 @@ export default function App() {
         <Stack.Screen name="Glicemia" component={Glicemia} />
         <Stack.Screen name="Vacinas" component={Vacinas} />
         <Stack.Screen name="Sintomas" component={Sintomas} />
+        <Stack.Screen name="Perfil" component={Perfil} />
       </Stack.Navigator>
     </NavigationContainer>
   );

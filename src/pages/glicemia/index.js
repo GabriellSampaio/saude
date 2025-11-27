@@ -93,6 +93,7 @@ const GlicemiaScreen = ({ navigation }) => {
             data: readings.length > 0 ? readings.slice(0, 6).reverse().map(r => r.level) : [0],
             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             strokeWidth: 3 
+        
         }]
     };
 

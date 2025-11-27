@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
         borderColor: '#E8EEF2',
     },
     calculateButton: {
-        backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         backgroundColor: '#4A90E2',
         paddingVertical: 14,
         paddingHorizontal: 24,
@@ -300,12 +299,35 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontSize: 15,
     },
-    resetButton: {
-        alignSelf: 'center',
+    
+    // Botões Extras (Novo)
+    extraButtonsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 10,
+    },
+    notificationButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#8E44AD', // Roxo para diferenciar
         paddingVertical: 12,
         paddingHorizontal: 20,
-        borderRadius: 10,
+        borderRadius: 12,
+        marginRight: 10,
+        elevation: 2,
+    },
+    notificationButtonText: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        fontWeight: '700',
+    },
+    resetButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
         backgroundColor: '#FFF5F5',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: '#FFCDD2',
     },
@@ -397,6 +419,61 @@ const styles = StyleSheet.create({
         color: '#95A5A6',
         fontSize: 14,
         fontWeight: '500',
+    },
+
+    // Estilos do Modal de Tempo
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        width: '85%',
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 20,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#2C3E50',
+        marginBottom: 10,
+    },
+    modalSubtitle: {
+        fontSize: 14,
+        color: '#7F8C8D',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    timeOption: {
+        width: '100%',
+        paddingVertical: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F2F5',
+        alignItems: 'center',
+    },
+    timeOptionText: {
+        fontSize: 16,
+        color: '#4A90E2',
+        fontWeight: '600',
+    },
+    closeButton: {
+        marginTop: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        backgroundColor: '#F8F9FA',
+        borderRadius: 10,
+    },
+    closeButtonText: {
+        color: '#E74C3C',
+        fontWeight: 'bold',
     },
 });
 
